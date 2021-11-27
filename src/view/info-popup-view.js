@@ -1,5 +1,5 @@
 //для создания строк описания фильма
-const createTableRow = (term, cell) => (
+const createTableRowTemplate = (term, cell) => (
   `<tr class="film-details__row">
     <td class="film-details__term">${term}</td>
     <td class="film-details__cell">${cell}</td>
@@ -36,13 +36,13 @@ export const createInfoPopupTemplate = () => (
           </div>
 
           <table class="film-details__table">
-          ${createTableRow('Director','Anthony Mann')}
-          ${createTableRow('Writers','Anne Wigton, Heinz Herald, Richard Weil')}
-          ${createTableRow('Actors','Erich von Stroheim, Mary Beth Hughes, Dan Duryea')}
-          ${createTableRow('Release Date','30 March 1945')}
-          ${createTableRow('Runtime','1h 18m')}
-          ${createTableRow('Country','USA')}
-          ${createTableRow('Genres', genresTemplate)}
+          ${createTableRowTemplate('Director','Anthony Mann')}
+          ${createTableRowTemplate('Writers','Anne Wigton, Heinz Herald, Richard Weil')}
+          ${createTableRowTemplate('Actors','Erich von Stroheim, Mary Beth Hughes, Dan Duryea')}
+          ${createTableRowTemplate('Release Date','30 March 1945')}
+          ${createTableRowTemplate('Runtime','1h 18m')}
+          ${createTableRowTemplate('Country','USA')}
+          ${createTableRowTemplate('Genres', genresTemplate)}
           </table>
 
           <p class="film-details__film-description">

@@ -1,4 +1,4 @@
-export const createMenuTemplate = () => (
+export const createStatisticsTemplate = () => (
   `<section class="statistic">
     <p class="statistic__rank">
       Your rank

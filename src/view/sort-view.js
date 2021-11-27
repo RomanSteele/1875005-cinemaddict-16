@@ -1,4 +1,4 @@
-const createSortButton = (title, isActive) => {
+const createSortButton = (title, isActive = false) => {
   const activeClass = isActive ? 'sort__button--active' : '';
   return (
     `<li><a href="#" class="sort__button ${activeClass}">${title}</a></li>`
@@ -7,8 +7,8 @@ const createSortButton = (title, isActive) => {
 
 export const createSortButtonsTemplate = () =>(
   `<ul class="sort">
-    ${createSortButton('Sort by default',false)}
-    ${createSortButton('Sort by date',true)}
-    ${createSortButton('Sort by rating',false)}
+    ${createSortButton('Sort by default')}
+    ${createSortButton('Sort by date')}
+    ${createSortButton('Sort by rating')}
   </ul>`
 );

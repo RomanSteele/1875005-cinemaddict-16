@@ -2,8 +2,8 @@ import {renderTemplate} from './render.js';
 import {createProfileRatingTemplate} from './view/profile-rating-view.js';
 import {createMenuTemplate} from './view/menu-view.js';
 import {createSortButtonsTemplate} from './view/sort-view.js';
-import {filmsSectionTemplate} from './view/films-section-view.js';
-import {createFilmsContainer} from './view/cards-container-view.js';
+import {createFilmsSectionTemplate} from './view/film-section-view.js';
+import {createFilmsContainerTemplate} from './view/cards-container-view.js';
 import {createFilmCardTemplate} from './view/film-card-view.js';
 //import {createInfoPopupTemplate} from './view/info-popup-view.js';
 import {createShowMoreButtonTemplate} from './view/show-more-button-view.js';
@@ -11,11 +11,11 @@ import {createShowMoreButtonTemplate} from './view/show-more-button-view.js';
 const FILM_CARDS_COUNT = 5;
 
 const siteHeader = document.querySelector('.header');
+const siteMain = document.querySelector('.main');
 
 //Звание пользователя
 renderTemplate(siteHeader, createProfileRatingTemplate());
 
-const siteMain = document.querySelector('.main');
 
 //Меню
 renderTemplate(siteMain, createMenuTemplate());
@@ -23,14 +23,13 @@ renderTemplate(siteMain, createMenuTemplate());
 //Сортировка
 renderTemplate(siteMain,createSortButtonsTemplate());
 
-
 //Секция фильмов
-renderTemplate(siteMain,filmsSectionTemplate());
+renderTemplate(siteMain,createFilmsSectionTemplate());
 
 const filmsListSection = siteMain.querySelector('.films-list');
 
 //Контейнер для фильмов
-renderTemplate(filmsListSection, createFilmsContainer());
+renderTemplate(filmsListSection, createFilmsContainerTemplate());
 
 const siteFilmSection = siteMain.querySelector('.films-list__container');
 
