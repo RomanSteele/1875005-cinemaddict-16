@@ -1,32 +1,46 @@
+import {renderTemplate} from './render.js';
 import {createProfileRatingTemplate} from './view/profile-rating-view.js';
-import {renderTemplate, RenderPosition} from './render.js';
-import {createFilmCardTemplate} from './view/film-card-in-list-view.js';
-import {createMenuTemplate} from './view/menu-filters-statistics-view.js';
-import {createInfoPopupTemplate} from './view/info-popup-view.js';
+import {createMenuTemplate} from './view/menu-view.js';
+import {createSortButtonsTemplate} from './view/sort-view.js';
+import {filmsSectionTemplate} from './view/films-section-view.js';
+import {createFilmsContainer} from './view/cards-container-view.js';
+import {createFilmCardTemplate} from './view/film-card-view.js';
+//import {createInfoPopupTemplate} from './view/info-popup-view.js';
 import {createShowMoreButtonTemplate} from './view/show-more-button-view.js';
 
-const TASK_COUNT = 5;
+const FILM_CARDS_COUNT = 5;
 
-const siteHeaderElement = document.querySelector('.header');
+const siteHeader = document.querySelector('.header');
 
 //Звание пользователя
-renderTemplate(siteHeaderElement, createProfileRatingTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(siteHeader, createProfileRatingTemplate());
 
-const siteMainElement = document.querySelector('.main');
+const siteMain = document.querySelector('.main');
 
 //Меню
-renderTemplate(siteMainElement, createMenuTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(siteMain, createMenuTemplate());
+
+//Сортировка
+renderTemplate(siteMain,createSortButtonsTemplate());
+
+
+//Секция фильмов
+renderTemplate(siteMain,filmsSectionTemplate());
+
+const filmsListSection = siteMain.querySelector('.films-list');
+
+//Контейнер для фильмов
+renderTemplate(filmsListSection, createFilmsContainer());
+
+const siteFilmSection = siteMain.querySelector('.films-list__container');
 
 //Карточка фильма
-const siteFilmSection = siteMainElement.querySelector('.films-list__container');
-
-for (let i = 0; i < TASK_COUNT; i++) {
-  renderTemplate(siteFilmSection, createFilmCardTemplate(), RenderPosition.BEFOREEND);
+for (let i = 0; i < FILM_CARDS_COUNT; i++) {
+  renderTemplate(siteFilmSection, createFilmCardTemplate());
 }
 
-
 //Попап с подробной информацией
-renderTemplate(siteMainElement, createInfoPopupTemplate(), RenderPosition.BEFOREEND);
+//renderTemplate(siteMain, createInfoPopupTemplate());
 
 //Кнопка 'Show more'
-renderTemplate(siteMainElement, createShowMoreButtonTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(siteFilmSection, createShowMoreButtonTemplate());

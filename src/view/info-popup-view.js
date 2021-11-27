@@ -1,3 +1,14 @@
+//для создания строк описания фильма
+const createTableRow = (term, cell) => (
+  `<tr class="film-details__row">
+    <td class="film-details__term">${term}</td>
+    <td class="film-details__cell">${cell}</td>
+  </tr>`
+);
+const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
+const genresTemplate = ['Drama', 'Film-Noir', 'Mystery'].map(createGenreTemplate).join('');
+
+
 export const createInfoPopupTemplate = () => (
   `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -25,37 +36,13 @@ export const createInfoPopupTemplate = () => (
           </div>
 
           <table class="film-details__table">
-            <tr class="film-details__row">
-              <td class="film-details__term">Director</td>
-              <td class="film-details__cell">Anthony Mann</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">Anne Wigton, Heinz Herald, Richard Weil</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">Erich von Stroheim, Mary Beth Hughes, Dan Duryea</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">30 March 1945</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">1h 18m</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Country</td>
-              <td class="film-details__cell">USA</td>
-            </tr>
-            <tr class="film-details__row">
-              <td class="film-details__term">Genres</td>
-              <td class="film-details__cell">
-                <span class="film-details__genre">Drama</span>
-                <span class="film-details__genre">Film-Noir</span>
-                <span class="film-details__genre">Mystery</span></td>
-            </tr>
+          ${createTableRow('Director','Anthony Mann')}
+          ${createTableRow('Writers','Anne Wigton, Heinz Herald, Richard Weil')}
+          ${createTableRow('Actors','Erich von Stroheim, Mary Beth Hughes, Dan Duryea')}
+          ${createTableRow('Release Date','30 March 1945')}
+          ${createTableRow('Runtime','1h 18m')}
+          ${createTableRow('Country','USA')}
+          ${createTableRow('Genres', genresTemplate)}
           </table>
 
           <p class="film-details__film-description">
@@ -76,19 +63,21 @@ export const createInfoPopupTemplate = () => (
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
 
         <ul class="film-details__comments-list">
-          <li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/smile.png" width="55" height="55" alt="emoji-smile">
-            </span>
-            <div>
-              <p class="film-details__comment-text">Interesting setting and a good cast</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">Tim Macoveev</span>
-                <span class="film-details__comment-day">2019/12/31 23:59</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>
+
+        <li class="film-details__comment">
+        <span class="film-details__comment-emoji">
+          <img src="./images/emoji/smile.png" width="55" height="55" alt="emoji-smile">
+        </span>
+        <div>
+          <p class="film-details__comment-text">Interesting setting and a good cast</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">Tim Macoveev</span>
+            <span class="film-details__comment-day">2019/12/31 23:59</span>
+            <button class="film-details__comment-delete">Delete</button>
+          </p>
+        </div>
+      </li>
+
           <li class="film-details__comment">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/sleeping.png" width="55" height="55" alt="emoji-sleeping">
@@ -161,3 +150,23 @@ export const createInfoPopupTemplate = () => (
         </div>
       </section>`
 );
+
+
+/* для комментариев, подождать данные.
+const createComment = (emojiImage,emojiAlt,textValue,authorValue,timeValue) => (
+  `<li class="film-details__comment">
+  <span class="film-details__comment-emoji">
+    <img src="${emojiImage}" width="55" height="55" alt="${emojiAlt}">
+  </span>
+  <div>
+    <p class="film-details__comment-text">${textValue}</p>
+    <p class="film-details__comment-info">
+      <span class="film-details__comment-author">${authorValue}</span>
+      <span class="film-details__comment-day">${timeValue}</span>
+      <button class="film-details__comment-delete">Delete</button>
+    </p>
+  </div>
+</li>`
+);
+${createComment('./images/emoji/smile.png','emoji-smile','Interesting setting and a good cast','Tim Macoveev','2019/12/31 23:59')}
+*/

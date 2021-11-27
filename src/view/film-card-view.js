@@ -1,3 +1,13 @@
+const createControlButtonTemplate = (name, title, isActive = false) => {
+  const activeClass = isActive ? 'film-card__controls-item--active' : '';
+  return (
+    `<button class="film-card__controls-item button film-card__controls-item--${name} ${activeClass}">
+      ${title}
+    </button>`
+  );
+};
+
+
 export const createFilmCardTemplate = () => (
   ` <article class="film-card">
           <a class="film-card__link">
@@ -13,11 +23,10 @@ export const createFilmCardTemplate = () => (
             <span class="film-card__comments">5 comments</span>
           </a>
           <div class="film-card__controls">
-            <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-            <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
+          ${createControlButtonTemplate('add-to-watchlist', 'Add to watchlist', true)}
+          ${createControlButtonTemplate('mark-as-watched', 'Mark as watched')}
+          ${createControlButtonTemplate('favorite', 'Mark as favorite')}
           </div>
   </article>
   `
 );
-
