@@ -8,6 +8,23 @@ const createTableRowTemplate = (term, cell) => (
 const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
 const genresTemplate = ['Drama', 'Film-Noir', 'Mystery'].map(createGenreTemplate).join('');
 
+/*
+const createComment = (emotion,text,author,date) => (
+  `<li class="film-details__comment">
+  <span class="film-details__comment-emoji">
+    <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="">
+  </span>
+  <div>
+    <p class="film-details__comment-text">${text}</p>
+    <p class="film-details__comment-info">
+      <span class="film-details__comment-author">${author}</span>
+      <span class="film-details__comment-day">${date}</span>
+      <button class="film-details__comment-delete">Delete</button>
+    </p>
+  </div>
+</li>`
+);
+*/
 
 export const createInfoPopupTemplate = () => (
   `<section class="film-details">
@@ -151,22 +168,3 @@ export const createInfoPopupTemplate = () => (
       </section>`
 );
 
-
-/* для комментариев, подождать данные.
-const createComment = (emojiImage,emojiAlt,textValue,authorValue,timeValue) => (
-  `<li class="film-details__comment">
-  <span class="film-details__comment-emoji">
-    <img src="${emojiImage}" width="55" height="55" alt="${emojiAlt}">
-  </span>
-  <div>
-    <p class="film-details__comment-text">${textValue}</p>
-    <p class="film-details__comment-info">
-      <span class="film-details__comment-author">${authorValue}</span>
-      <span class="film-details__comment-day">${timeValue}</span>
-      <button class="film-details__comment-delete">Delete</button>
-    </p>
-  </div>
-</li>`
-);
-${createComment('./images/emoji/smile.png','emoji-smile','Interesting setting and a good cast','Tim Macoveev','2019/12/31 23:59')}
-*/
