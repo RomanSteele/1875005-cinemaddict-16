@@ -64,23 +64,26 @@ const generateTitle = () => {
   return TITLES[randomIndex];
 };
 
-const COMMENTS_COUNT = 5;
-const generateCommentArray = Array.from({length:COMMENTS_COUNT},generateComment);
 
 // Создаёт данные для карточки
 export const generateCard = () => ({
   title: generateTitle(),
+  alternativeTitle: generateTitle(),
   rating: getRandomFloatInteger(),
+  imgSource: generatePoster(),
+  ageRating: getRandomInteger(1,18),
+  director: generateTitle(),
+  writers: generateTitle(),
+  actors: generateTitle(),
+  release: getRandomInteger(1896,2021),
   year: getRandomInteger(1896,2021),
   duration: generateDuration(),
   genre: getRandomGenre(),
-  imgSource: generatePoster(),
-  alt: '',
+  alt: generateTitle(),
   description: generateDescription(),
-  comments: generateCommentArray.length,
+  comments: Array.from({length:getRandomInteger(1,5)},generateComment),
   inWatchlist: generateBooleanForList(),
   isWatched: generateBooleanForList(),
   isFavourite: generateBooleanForList(),
+  watchingDate: '',
 });
-
-

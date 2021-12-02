@@ -35,7 +35,7 @@ export const createFilmCardTemplate = (film = {}) => {
             </p>
             <img src="${imgSource}" alt="${alt}" class="film-card__poster">
             <p class="film-card__description">${description}</p>
-            <span class="film-card__comments">${comments} comments</span>
+            <span class="film-card__comments">${comments.length} comments</span>
           </a>
           <div class="film-card__controls">
           ${createControlButtonTemplate('add-to-watchlist', 'Add to watchlist', inWatchlist )}
@@ -45,4 +45,3 @@ export const createFilmCardTemplate = (film = {}) => {
   </article>
   `;
 };
-

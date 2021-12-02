@@ -5,15 +5,14 @@ import {createSortButtonsTemplate} from './view/sort-view.js';
 import {createFilmsSectionTemplate} from './view/film-section-view.js';
 import {createFilmsContainerTemplate} from './view/cards-container-view.js';
 import {createFilmCardTemplate} from './view/film-card-view.js';
-//import {createInfoPopupTemplate} from './view/popup-view.js';
+import {createInfoPopupTemplate} from './view/popup-view.js';
 import {createShowMoreButtonTemplate} from './view/show-more-button-view.js';
 
 import {generateFilter} from './mock/filter.js';
 import {generateCard} from './mock/card.js';
 
-
-const FILM_CARDS_COUNT = 19;
-//const FIRST_FIVE_CARDS_COUNT = 5;
+const FILM_CARDS_COUNT = 25;
+const FIRST_FIVE_CARDS_COUNT = 5;
 const CARDS_PER_STEP = 5;
 
 
@@ -54,7 +53,7 @@ const siteFilmSection = siteMain.querySelector('.films-list__container');
 
 
 //Карточка фильма первые 5
-for (let i = 0; i < Math.min(films.length, CARDS_PER_STEP); i++) {
+for (let i = 0; i < Math.min(films.length, FIRST_FIVE_CARDS_COUNT); i++) {
   renderTemplate(siteFilmSection, createFilmCardTemplate(films[i]));
 }
 
@@ -80,6 +79,5 @@ if (films.length > CARDS_PER_STEP) {
   });
 }
 
-
 //Попап с подробной информацией
-//renderTemplate(siteMain, createInfoPopupTemplate(films[0]));
+renderTemplate(siteMain, createInfoPopupTemplate(films[0],films[0].comments));

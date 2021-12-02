@@ -39,8 +39,14 @@ const generateDate = () => {
   return dayjs().add(daysGap, 'day').toDate();
 };
 
+
+//Создает id комментария
+const generatePoorId = () => String(Math.random()).slice(-5);
+
+
 //Создает комментарий
 export const generateComment = () => ({
+  id: generatePoorId(),
   text: generateCommentText(),
   author: generateCommentUsername(),
   date: generateDate(),
