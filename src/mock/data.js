@@ -49,3 +49,28 @@ export const COMMENTS_EMOJI = [
   'puke',
   'angry',
 ];
+
+export const ACTORS = [
+  'Doe Doe',
+  'Tim Tim',
+  'Grant Grant',
+  'Myron Myron',
+  'Boyd Boyd',
+];
+
+export const WRITERS = [
+  'Tim Lee',
+  'Yung Dee',
+  'Kim Lo',
+  'Chin Meng',
+  'Billy D',
+];
+
+export const COUNTRY = [
+  'Finland',
+  'Denmark',
+  'Norway',
+  'China',
+  'Korea',
+  'Japan',
+];

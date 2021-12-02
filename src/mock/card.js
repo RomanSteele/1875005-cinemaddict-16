@@ -1,5 +1,6 @@
-import {CARD_DESCRIPTION, POSTERS, TITLES,} from './data.js';
+import {CARD_DESCRIPTION, POSTERS, TITLES, ACTORS, WRITERS, COUNTRY} from './data.js';
 import {generateComment} from './comment.js';
+import dayjs from 'dayjs';
 
 
 // Случайное значение
@@ -38,23 +39,20 @@ const generateBooleanForList = () => {
   return true;
 };
 
-//Генерирует продолжительность фильма
-const generateDuration = () => (`${getRandomInteger(0,24)  }h ${  getRandomInteger(0,59)  }m`);
-
 
 //Генерирует постер фильма
 const generatePoster = () => {
   const randomIndex = getRandomInteger(0, POSTERS.length - 1);
 
-  return (`./images/posters/${POSTERS[randomIndex]}`);
+  return (`images/posters/${POSTERS[randomIndex]}`);
 };
 
 // Генерирует случайный жанр
 const getRandomGenre = () => {
-  const genres = ['Mystery', 'Film-Noir', 'Drama', 'Musical'];
-  const randomIndex = getRandomInteger(0, genres.length - 1);
+  const genres = ['Mystery', 'Film-Noir', 'Drama', 'Musical','Horror','Cartoon','Comedy'];
+  const randomGenres = genres.slice(getRandomInteger(-7,+7));
 
-  return genres[randomIndex];
+  return randomGenres;
 };
 
 //Берёт случайное название из массива в data
@@ -64,6 +62,12 @@ const generateTitle = () => {
   return TITLES[randomIndex];
 };
 
+//Случайная страна
+const generateCountry = () => {
+  const randomIndex = getRandomInteger(0, COUNTRY.length - 1);
+
+  return COUNTRY[randomIndex];
+};
 
 // Создаёт данные для карточки
 export const generateCard = () => ({
@@ -73,13 +77,12 @@ export const generateCard = () => ({
   imgSource: generatePoster(),
   ageRating: getRandomInteger(1,18),
   director: generateTitle(),
-  writers: generateTitle(),
-  actors: generateTitle(),
-  release: getRandomInteger(1896,2021),
-  year: getRandomInteger(1896,2021),
-  duration: generateDuration(),
+  writers: [WRITERS],
+  actors: [ACTORS],
+  release: dayjs(),
+  releaseCountry: generateCountry(),
+  duration: getRandomInteger(30,240),
   genre: getRandomGenre(),
-  alt: generateTitle(),
   description: generateDescription(),
   comments: Array.from({length:getRandomInteger(1,5)},generateComment),
   inWatchlist: generateBooleanForList(),

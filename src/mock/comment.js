@@ -52,3 +52,4 @@ export const generateComment = () => ({
   date: generateDate(),
   emotion: generateCommentEmoji(),
 });
+

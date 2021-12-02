@@ -5,9 +5,17 @@ const createTableRowTemplate = (term, cell) => (
     <td class="film-details__cell">${cell}</td>
   </tr>`
 );
-const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
-const genresTemplate = ['Drama', 'Film-Noir', 'Mystery'].map(createGenreTemplate).join('');
 
+//Разметка для жанров
+const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
+
+//Подставляет в разметку Genres или Genre
+const genreOrGenres = (genre) => {
+  if (genre.length > 1) {
+    return 'Genres';
+  }
+  return 'Genre';
+};
 
 const createCommentTemplate = ({ id, author, text, date, emotion }) => (
   `<li class="film-details__comment">
@@ -34,7 +42,16 @@ const createControlButtonTemplate = (name, title, isActive) => {
 
 const createCommentsTemplate = (comments) => comments.map(createCommentTemplate).join('');
 
+
 export const createInfoPopupTemplate = (film = {}, comments) => {
+
+  //Приводит минуты к формату
+  function durationToHours (mins) {
+    const hours = Math.trunc(mins/60);
+    const minutes = mins % 60;
+    return `${hours  }h ${  minutes  }m`;
+  }
+
   const {
     title = '',
     alternativeTitle = '',
@@ -47,8 +64,8 @@ export const createInfoPopupTemplate = (film = {}, comments) => {
     release = '',
     releaseCountry ='',
     //year = '',
-    duration = '',
-    //genre = [],
+    duration = 77,
+    genre = [],
     //alt = '',
     description = '',
     inWatchlist = false,
@@ -58,6 +75,7 @@ export const createInfoPopupTemplate = (film = {}, comments) => {
   } = film;
 
   const commentsTemplate = createCommentsTemplate(comments);
+  const genresTemplate = genre.map(createGenreTemplate).join('');
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -67,7 +85,7 @@ export const createInfoPopupTemplate = (film = {}, comments) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="${imgSource}" alt="">
+          <img class="film-details__poster-img" src="./${imgSource}" alt="">
 
           <p class="film-details__age">${ageRating}+</p>
         </div>
@@ -88,10 +106,10 @@ export const createInfoPopupTemplate = (film = {}, comments) => {
           ${createTableRowTemplate('Director',director)}
           ${createTableRowTemplate('Writers',writers)}
           ${createTableRowTemplate('Actors',actors)}
-          ${createTableRowTemplate('Release Date',release)}
-          ${createTableRowTemplate('Runtime',duration)}
+          ${createTableRowTemplate('Release Date',release.format('DD MMMM YYYY'))}
+          ${createTableRowTemplate('Runtime',durationToHours(duration))}
           ${createTableRowTemplate('Country',releaseCountry)}
-          ${createTableRowTemplate('Genres', genresTemplate)}
+          ${createTableRowTemplate(genreOrGenres(genre), genresTemplate)}
           </table>
 
           <p class="film-details__film-description">
