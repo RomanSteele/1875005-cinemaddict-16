@@ -69,6 +69,9 @@ const generateCountry = () => {
   return COUNTRY[randomIndex];
 };
 
+//если Already watched - вернёт дату, если нет - вернёт null
+const getWatchingDate = (isWatched) => (isWatched ===  true ? dayjs() : null);
+
 // Создаёт данные для карточки
 export const generateCard = () => ({
   title: generateTitle(),
@@ -77,16 +80,16 @@ export const generateCard = () => ({
   imgSource: generatePoster(),
   ageRating: getRandomInteger(1,18),
   director: generateTitle(),
-  writers: [WRITERS],
-  actors: [ACTORS],
+  writers: WRITERS,
+  actors: ACTORS,
   release: dayjs(),
   releaseCountry: generateCountry(),
   duration: getRandomInteger(30,240),
-  genre: getRandomGenre(),
+  genres: getRandomGenre(),
   description: generateDescription(),
   comments: Array.from({length:getRandomInteger(1,5)},generateComment),
   inWatchlist: generateBooleanForList(),
   isWatched: generateBooleanForList(),
   isFavourite: generateBooleanForList(),
-  watchingDate: '',
+  watchingDate: getWatchingDate(),
 });

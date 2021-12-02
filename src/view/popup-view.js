@@ -1,3 +1,5 @@
+import {shiftDurationToHours} from './utils.js';
+
 //для создания строк описания фильма
 const createTableRowTemplate = (term, cell) => (
   `<tr class="film-details__row">
@@ -10,7 +12,7 @@ const createTableRowTemplate = (term, cell) => (
 const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
 //Подставляет в разметку Genres или Genre
-const genreOrGenres = (genre) => {
+const useGenreOrGenres = (genre) => {
   if (genre.length > 1) {
     return 'Genres';
   }
@@ -43,39 +45,31 @@ const createControlButtonTemplate = (name, title, isActive) => {
 const createCommentsTemplate = (comments) => comments.map(createCommentTemplate).join('');
 
 
-export const createInfoPopupTemplate = (film = {}, comments) => {
-
-  //Приводит минуты к формату
-  function durationToHours (mins) {
-    const hours = Math.trunc(mins/60);
-    const minutes = mins % 60;
-    return `${hours  }h ${  minutes  }m`;
-  }
+export const createInfoPopupTemplate = (film, comments) => {
 
   const {
-    title = '',
-    alternativeTitle = '',
-    rating = 9.5,
-    imgSource = '',
-    ageRating = 18,
-    director = '',
-    writers = '',
-    actors = '',
-    release = '',
-    releaseCountry ='',
-    //year = '',
-    duration = 77,
-    genre = [],
-    //alt = '',
-    description = '',
-    inWatchlist = false,
-    isWatched = false,
-    isFavourite = false,
-    //watchingDate = '',
+    title,
+    alternativeTitle,
+    rating,
+    imgSource,
+    ageRating,
+    director,
+    writers,
+    actors,
+    release,
+    releaseCountry,
+    duration,
+    genres,
+    description,
+    inWatchlist,
+    isWatched,
+    isFavourite,
+    //watchingDate,
   } = film;
 
+
   const commentsTemplate = createCommentsTemplate(comments);
-  const genresTemplate = genre.map(createGenreTemplate).join('');
+  const genresTemplate = genres.map(createGenreTemplate).join('');
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -104,12 +98,12 @@ export const createInfoPopupTemplate = (film = {}, comments) => {
 
           <table class="film-details__table">
           ${createTableRowTemplate('Director',director)}
-          ${createTableRowTemplate('Writers',writers)}
-          ${createTableRowTemplate('Actors',actors)}
+          ${createTableRowTemplate('Writers',writers.join(', '))}
+          ${createTableRowTemplate('Actors',actors.join(', '))}
           ${createTableRowTemplate('Release Date',release.format('DD MMMM YYYY'))}
-          ${createTableRowTemplate('Runtime',durationToHours(duration))}
+          ${createTableRowTemplate('Runtime',shiftDurationToHours(duration))}
           ${createTableRowTemplate('Country',releaseCountry)}
-          ${createTableRowTemplate(genreOrGenres(genre), genresTemplate)}
+          ${createTableRowTemplate(useGenreOrGenres(genres), genresTemplate)}
           </table>
 
           <p class="film-details__film-description">

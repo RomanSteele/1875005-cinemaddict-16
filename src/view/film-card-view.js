@@ -1,3 +1,5 @@
+import {shiftDurationToHours} from './utils.js';
+
 const createControlButtonTemplate = (name, title, isActive) => {
   const activeClass = isActive ? 'film-card__controls-item--active' : '';
   return (
@@ -9,19 +11,13 @@ const createControlButtonTemplate = (name, title, isActive) => {
 
 
 export const createFilmCardTemplate = (film = {}) => {
-//Приводит минуты к формату
-  function durationToHours (mins) {
-    const hours = Math.trunc(mins/60);
-    const minutes = mins % 60;
-    return `${hours  }h ${  minutes  }m`;
-  }
 
   const {
     title = '',
-    rating = '',
+    rating = 9.5,
     release = '',
     duration = '',
-    genre = [],
+    genres = [],
     imgSource = '',
     alt = '',
     description = 'description',
@@ -37,8 +33,8 @@ export const createFilmCardTemplate = (film = {}) => {
             <p class="film-card__rating">${rating}</p>
             <p class="film-card__info">
               <span class="film-card__year">${release.format('YYYY')}</span>
-              <span class="film-card__duration">${durationToHours(duration)}</span>
-              <span class="film-card__genre">${genre[0]}</span>
+              <span class="film-card__duration">${shiftDurationToHours(duration)}</span>
+              <span class="film-card__genre">${genres[0]}</span>
             </p>
             <img src="./${imgSource}" alt="${alt}" class="film-card__poster">
             <p class="film-card__description">${description}</p>
