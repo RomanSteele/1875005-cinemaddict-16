@@ -1,6 +1,6 @@
 import {createElement} from '../render.js';
 
-const createEmptyListTemplate = () => ('<h2 class="films-list__title">There are no movies in our database</h2>');
+const createEmptyListTemplate = () => '<h2 class="films-list__title">There are no movies in our database</h2>';
 
 export default class EmptyListView {
   #element = null;

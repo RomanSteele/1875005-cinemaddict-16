@@ -24,8 +24,8 @@ export const render = (container, element, place) => {
 };
 
 export const createElement = (template) => {
-  const newElement = document.createElement('div');
-  newElement.innerHTML = template;
-  return newElement.firstChild;
+  const newContainer = document.createElement('div');
+  newContainer.innerHTML = template;
+  return newContainer.firstChild;
 };
 

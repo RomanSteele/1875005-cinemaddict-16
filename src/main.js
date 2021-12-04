@@ -1,11 +1,11 @@
 import {RenderPosition, render} from './render.js';
 import ProfileRatingView from './view/profile-rating-view.js';
 import MenuView from './view/menu-view.js';
-import SortButtonView from './view/sort-view.js';
-import FilmsSectionView from './view/film-section-view.js';
-import FilmsContainerView from './view/cards-container-view.js';
+import SortButtonView from './view/sort-button-view.js';
+import FilmsSectionView from './view/films-section-view.js';
+import FilmsContainerView from './view/films-container-view.js';
 import FilmCardView from './view/film-card-view.js';
-import InfoPopupView from './view/popup-view.js';
+import InfoPopupView from './view/info-popup-view.js';
 import ShowMoreButtonView from './view/show-more-button-view.js';
 import FilmsView from './view/films-view.js';
 import EmptyListView from './view/empty-list-view.js';
@@ -40,7 +40,8 @@ render(siteMain, new MenuView(filters).element, RenderPosition.BEFORE_END);
 
 
 //Сортировка
-render(siteMain,new SortButtonView().element, RenderPosition.BEFORE_END);
+const sortSection = new SortButtonView();
+render(siteMain,sortSection.element, RenderPosition.BEFORE_END);
 
 
 //Фильмы
@@ -51,20 +52,21 @@ render(siteMain, fullFilmSection.element, RenderPosition.BEFORE_END);
 //Секция фильмов c проверкой наличия карточек
 const filmSection = new FilmsSectionView();
 
-if (films.length <= 0) {
-  render(fullFilmSection.element, new EmptyListView().element, RenderPosition.BEFORE_END);
-} else {
+if (films.length > 0) {
   render(fullFilmSection.element,filmSection.element, RenderPosition.BEFORE_END);
+} else {
+  render(fullFilmSection.element, new EmptyListView().element, RenderPosition.BEFORE_END);
+  siteMain.removeChild(sortSection.element);
 }
 
 
 //Контейнер для фильмов
-const containerComponent = new FilmsContainerView();
-render(filmSection.element, containerComponent.element, RenderPosition.BEFORE_END);
+const containerSection = new FilmsContainerView();
+render(filmSection.element, containerSection.element, RenderPosition.BEFORE_END);
 
 
 //Для карточек и попапа
-const renderFilmCard = (Component, card, comments) => {
+const renderFilmCard = (container, card, comments) => {
 
   const filmCard = new FilmCardView(card);
   const filmPopup = new InfoPopupView(card, comments);
@@ -86,33 +88,32 @@ const renderFilmCard = (Component, card, comments) => {
     siteMain.classList.remove('hide-overflow');
   });
 
-  render(Component, filmCard.element, RenderPosition.BEFORE_END);
+  render(container, filmCard.element, RenderPosition.BEFORE_END);
 };
 
 
 //Карточка фильма первые 5
 for (let i = 0; i < Math.min(films.length, FIRST_FIVE_CARDS_COUNT); i++) {
-  renderFilmCard(containerComponent.element, films[i], films[i].comments);
+  renderFilmCard(containerSection.element, films[i], films[i].comments);
 }
 
-
+const showMoreButtonView = new ShowMoreButtonView();
 //Кнопка 'Show more'
 if (films.length > CARDS_PER_STEP) {
   let renderedCardsCount = CARDS_PER_STEP;
-  render(filmSection.element, new ShowMoreButtonView().element, RenderPosition.BEFORE_END);
+  render(filmSection.element, showMoreButtonView.element, RenderPosition.BEFORE_END);
 
-  const showMoreButton = filmSection.element.querySelector('.films-list__show-more');
-  showMoreButton.addEventListener('click',(evt) => {
+  showMoreButtonView.element.addEventListener('click',(evt) => {
     evt.preventDefault();
     films
       .slice(renderedCardsCount, renderedCardsCount + CARDS_PER_STEP)
-      .forEach((card) => renderFilmCard(containerComponent.element ,card ,card.comments));
+      .forEach((card) => renderFilmCard(containerSection.element ,card ,card.comments));
 
 
     renderedCardsCount += CARDS_PER_STEP;
 
     if (renderedCardsCount >= films.length) {
-      showMoreButton.remove();
+      showMoreButtonView.element.remove();
     }
   });
 }
