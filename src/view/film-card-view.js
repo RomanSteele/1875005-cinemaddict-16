@@ -1,4 +1,6 @@
 import {shiftDurationToHours} from './utils.js';
+import {createElement} from '../render.js';
+
 
 const createControlButtonTemplate = (name, title, isActive) => {
   const activeClass = isActive ? 'film-card__controls-item--active' : '';
@@ -10,24 +12,24 @@ const createControlButtonTemplate = (name, title, isActive) => {
 };
 
 
-export const createFilmCardTemplate = (film = {}) => {
+const createFilmCardTemplate = (film) => {
 
   const {
-    title = '',
-    rating = 9.5,
-    release = '',
-    duration = '',
-    genres = [],
-    imgSource = '',
-    alt = '',
-    description = 'description',
-    comments = '8 comments',
-    inWatchlist = false,
-    isWatched = false,
-    isFavourite = true,
+    title,
+    rating,
+    release,
+    duration,
+    genres,
+    imgSource,
+    alternativeTitle,
+    description,
+    comments,
+    inWatchlist,
+    isWatched,
+    isFavourite,
   } = film;
 
-  return` <article class="film-card">
+  return`<article class="film-card">
           <a class="film-card__link">
             <h3 class="film-card__title">${title}</h3>
             <p class="film-card__rating">${rating}</p>
@@ -36,7 +38,7 @@ export const createFilmCardTemplate = (film = {}) => {
               <span class="film-card__duration">${shiftDurationToHours(duration)}</span>
               <span class="film-card__genre">${genres[0]}</span>
             </p>
-            <img src="./${imgSource}" alt="${alt}" class="film-card__poster">
+            <img src="./${imgSource}" alt="${alternativeTitle}" class="film-card__poster">
             <p class="film-card__description">${description}</p>
             <span class="film-card__comments">${comments.length} comments</span>
           </a>
@@ -48,3 +50,28 @@ export const createFilmCardTemplate = (film = {}) => {
   </article>
   `;
 };
+
+export default class FilmCardView {
+  #element = null;
+  #card = null;
+
+  constructor(card) {
+    this.#card = card;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmCardTemplate(this.#card);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

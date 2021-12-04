@@ -1,12 +1,15 @@
-import {RenderPosition, renderTemplate} from './render.js';
-import {createProfileRatingTemplate} from './view/profile-rating-view.js';
-import {createMenuTemplate} from './view/menu-view.js';
-import {createSortButtonsTemplate} from './view/sort-view.js';
-import {createFilmsSectionTemplate} from './view/film-section-view.js';
-import {createFilmsContainerTemplate} from './view/cards-container-view.js';
-import {createFilmCardTemplate} from './view/film-card-view.js';
-import {createInfoPopupTemplate} from './view/popup-view.js';
-import {createShowMoreButtonTemplate} from './view/show-more-button-view.js';
+import {RenderPosition, render} from './render.js';
+import ProfileRatingView from './view/profile-rating-view.js';
+import MenuView from './view/menu-view.js';
+import SortButtonView from './view/sort-button-view.js';
+import FilmsSectionView from './view/films-section-view.js';
+import FilmsContainerView from './view/films-container-view.js';
+import FilmCardView from './view/film-card-view.js';
+import InfoPopupView from './view/info-popup-view.js';
+import ShowMoreButtonView from './view/show-more-button-view.js';
+import FilmsView from './view/films-view.js';
+import EmptyListView from './view/empty-list-view.js';
+
 
 import {generateFilter} from './mock/filter.js';
 import {generateCard} from './mock/card.js';
@@ -29,55 +32,88 @@ const siteMain = document.querySelector('.main');
 
 
 //Звание пользователя
-renderTemplate(siteHeader, createProfileRatingTemplate());
+render(siteHeader, new ProfileRatingView().element, RenderPosition.BEFORE_END);
 
 
 //Меню
-renderTemplate(siteMain, createMenuTemplate(filters));
+render(siteMain, new MenuView(filters).element, RenderPosition.BEFORE_END);
 
 
 //Сортировка
-renderTemplate(siteMain,createSortButtonsTemplate());
+const sortSection = new SortButtonView();
+render(siteMain,sortSection.element, RenderPosition.BEFORE_END);
 
 
-//Секция фильмов
-renderTemplate(siteMain,createFilmsSectionTemplate());
+//Фильмы
+const fullFilmSection = new FilmsView();
+render(siteMain, fullFilmSection.element, RenderPosition.BEFORE_END);
 
-const filmsListSection = siteMain.querySelector('.films-list');
+
+//Секция фильмов c проверкой наличия карточек
+const filmSection = new FilmsSectionView();
+
+if (films.length > 0) {
+  render(fullFilmSection.element,filmSection.element, RenderPosition.BEFORE_END);
+} else {
+  render(fullFilmSection.element, new EmptyListView().element, RenderPosition.BEFORE_END);
+  siteMain.removeChild(sortSection.element);
+}
 
 
 //Контейнер для фильмов
-renderTemplate(filmsListSection, createFilmsContainerTemplate());
+const containerSection = new FilmsContainerView();
+render(filmSection.element, containerSection.element, RenderPosition.BEFORE_END);
 
-const siteFilmSection = siteMain.querySelector('.films-list__container');
+
+//Для карточек и попапа
+const renderFilmCard = (container, card, comments) => {
+
+  const filmCard = new FilmCardView(card);
+  const filmPopup = new InfoPopupView(card, comments);
+
+  //Открывает попап
+  const openCurrentPopup = () => {
+    render(siteMain, filmPopup.element, RenderPosition.BEFORE_END);
+  };
+
+  //Обработчик на карточку для открытия попапа
+  filmCard.element.querySelector('.film-card__link').addEventListener('click', () => {
+    openCurrentPopup();
+    siteMain.classList.add('hide-overflow');
+  });
+
+
+  filmPopup.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
+    siteMain.removeChild(filmPopup.element);
+    siteMain.classList.remove('hide-overflow');
+  });
+
+  render(container, filmCard.element, RenderPosition.BEFORE_END);
+};
 
 
 //Карточка фильма первые 5
 for (let i = 0; i < Math.min(films.length, FIRST_FIVE_CARDS_COUNT); i++) {
-  renderTemplate(siteFilmSection, createFilmCardTemplate(films[i]));
+  renderFilmCard(containerSection.element, films[i], films[i].comments);
 }
 
-
+const showMoreButtonView = new ShowMoreButtonView();
 //Кнопка 'Show more'
 if (films.length > CARDS_PER_STEP) {
   let renderedCardsCount = CARDS_PER_STEP;
-  renderTemplate(filmsListSection, createShowMoreButtonTemplate(),RenderPosition.BEFORE_END);
+  render(filmSection.element, showMoreButtonView.element, RenderPosition.BEFORE_END);
 
-  const showMoreButton = filmsListSection.querySelector('.films-list__show-more');
-  showMoreButton.addEventListener('click',(evt) => {
+  showMoreButtonView.element.addEventListener('click',(evt) => {
     evt.preventDefault();
     films
       .slice(renderedCardsCount, renderedCardsCount + CARDS_PER_STEP)
-      .forEach((card) => renderTemplate(siteFilmSection, createFilmCardTemplate(card)));
+      .forEach((card) => renderFilmCard(containerSection.element ,card ,card.comments));
 
 
     renderedCardsCount += CARDS_PER_STEP;
 
     if (renderedCardsCount >= films.length) {
-      showMoreButton.remove();
+      showMoreButtonView.element.remove();
     }
   });
 }
-
-//Попап с подробной информацией
-renderTemplate(siteMain, createInfoPopupTemplate(films[0],films[0].comments));

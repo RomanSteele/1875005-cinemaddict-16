@@ -1,8 +1,8 @@
 import {createElement} from '../render.js';
 
-const createShowMoreButtonTemplate = () => '<button class="films-list__show-more">Show more</button>';
+const createEmptyListTemplate = () => '<h2 class="films-list__title">There are no movies in our database</h2>';
 
-export default class ShowMoreButtonView {
+export default class EmptyListView {
   #element = null;
 
   get element() {
@@ -14,7 +14,7 @@ export default class ShowMoreButtonView {
   }
 
   get template() {
-    return createShowMoreButtonTemplate();
+    return createEmptyListTemplate();
   }
 
   removeElement() {

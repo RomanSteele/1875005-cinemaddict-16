@@ -5,6 +5,27 @@ export const RenderPosition = {
   AFTER_END: 'afterend',
 };
 
-export const renderTemplate = (container, template, place = RenderPosition.BEFORE_END) => {
-  container.insertAdjacentHTML(place, template);
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.BEFORE_BEGIN:
+      container.before(element);
+      break;
+    case RenderPosition.AFTER_BEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFORE_END:
+      container.append(element);
+      break;
+    case RenderPosition.AFTER_END:
+      container.after(element);
+      break;
+  }
 };
+
+export const createElement = (template) => {
+  const newContainer = document.createElement('div');
+  newContainer.innerHTML = template;
+  return newContainer.firstChild;
+};
+
