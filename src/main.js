@@ -95,6 +95,7 @@ const renderFilmCard = (container, card, comments) => {
   filmPopup.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
     siteMain.removeChild(filmPopup.element);
     siteMain.classList.remove('hide-overflow');
+    document.removeEventListener('keydown',onEscKeyDown);
   });
 
   render(container, filmCard.element, RenderPosition.BEFORE_END);
