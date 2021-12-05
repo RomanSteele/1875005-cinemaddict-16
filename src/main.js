@@ -77,10 +77,10 @@ const renderFilmCard = (container, card, comments) => {
   };
 
   //DRY для попапа
-  const erasePopup = (keyDownFunction) => {
+  const erasePopup = () => {
     siteMain.removeChild(filmPopup.element);
     siteMain.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', keyDownFunction);
+    document.removeEventListener('keydown', onEscKeyDown);
   };
 
 
