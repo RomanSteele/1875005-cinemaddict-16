@@ -76,13 +76,22 @@ const renderFilmCard = (container, card, comments) => {
     render(siteMain, filmPopup.element, RenderPosition.BEFORE_END);
   };
 
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      siteMain.removeChild(filmPopup.element);
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
   //Обработчик на карточку для открытия попапа
   filmCard.element.querySelector('.film-card__link').addEventListener('click', () => {
     openCurrentPopup();
     siteMain.classList.add('hide-overflow');
+    document.addEventListener('keydown',onEscKeyDown);
   });
 
-
+  //Для закрытия попапа
   filmPopup.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
     siteMain.removeChild(filmPopup.element);
     siteMain.classList.remove('hide-overflow');
