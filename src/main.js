@@ -76,16 +76,31 @@ const renderFilmCard = (container, card, comments) => {
     render(siteMain, filmPopup.element, RenderPosition.BEFORE_END);
   };
 
+  //DRY для попапа
+  const erasePopup = () => {
+    siteMain.removeChild(filmPopup.element);
+    siteMain.classList.remove('hide-overflow');
+    document.removeEventListener('keydown', onEscKeyDown);
+  };
+
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      erasePopup(onEscKeyDown);
+    }
+  };
+
   //Обработчик на карточку для открытия попапа
   filmCard.element.querySelector('.film-card__link').addEventListener('click', () => {
     openCurrentPopup();
     siteMain.classList.add('hide-overflow');
+    document.addEventListener('keydown',onEscKeyDown);
   });
 
-
+  //Для закрытия попапа
   filmPopup.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
-    siteMain.removeChild(filmPopup.element);
-    siteMain.classList.remove('hide-overflow');
+    erasePopup(onEscKeyDown);
   });
 
   render(container, filmCard.element, RenderPosition.BEFORE_END);
