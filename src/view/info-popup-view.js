@@ -1,5 +1,5 @@
 import {shiftDurationToHours} from './utils.js';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 //для создания строк описания фильма
 const createTableRowTemplate = (term, cell) => (
@@ -146,29 +146,28 @@ export const createInfoPopupTemplate = (film, comments) => {
       </section>`;
 };
 
-export default class InfoPopupView {
-  #element = null;
+export default class InfoPopupView extends AbstractView {
+
   #card = null;
   #comment = null;
 
   constructor(card,comment) {
+    super();
     this.#card = card;
     this.#comment = comment;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createInfoPopupTemplate(this.#card,this.#comment);
   }
 
-  removeElement() {
-    this.#element = null;
+  setClosePopupHandler = (callback) => {
+    this._callback.closePopup = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#popupCloseHandler);
+  }
+
+  #popupCloseHandler = () => {
+    this._callback.closePopup();
   }
 }
+

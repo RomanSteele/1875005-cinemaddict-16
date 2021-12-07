@@ -1,5 +1,5 @@
 import {shiftDurationToHours} from './utils.js';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 
 const createControlButtonTemplate = (name, title, isActive) => {
@@ -51,27 +51,25 @@ const createFilmCardTemplate = (film) => {
   `;
 };
 
-export default class FilmCardView {
-  #element = null;
+export default class FilmCardView extends AbstractView {
   #card = null;
 
   constructor(card) {
+    super();
     this.#card = card;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilmCardTemplate(this.#card);
   }
 
-  removeElement() {
-    this.#element = null;
+  setPopupOpenHandler = (callback) => {
+    this._callback.openPopup = callback;
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#popupOpenHandler);
+  }
+
+  #popupOpenHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openPopup();
   }
 }

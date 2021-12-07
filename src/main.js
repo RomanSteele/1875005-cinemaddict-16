@@ -92,14 +92,14 @@ const renderFilmCard = (container, card, comments) => {
   };
 
   //Обработчик на карточку для открытия попапа
-  filmCard.element.querySelector('.film-card__link').addEventListener('click', () => {
+  filmCard.setPopupOpenHandler (() => {
     openCurrentPopup();
     siteMain.classList.add('hide-overflow');
     document.addEventListener('keydown',onEscKeyDown);
   });
 
   //Для закрытия попапа
-  filmPopup.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
+  filmPopup.setClosePopupHandler(() => {
     erasePopup(onEscKeyDown);
   });
 
@@ -118,8 +118,7 @@ if (films.length > CARDS_PER_STEP) {
   let renderedCardsCount = CARDS_PER_STEP;
   render(filmSection.element, showMoreButtonView.element, RenderPosition.BEFORE_END);
 
-  showMoreButtonView.element.addEventListener('click',(evt) => {
-    evt.preventDefault();
+  showMoreButtonView.setClickHandler(() => {
     films
       .slice(renderedCardsCount, renderedCardsCount + CARDS_PER_STEP)
       .forEach((card) => renderFilmCard(containerSection.element ,card ,card.comments));
