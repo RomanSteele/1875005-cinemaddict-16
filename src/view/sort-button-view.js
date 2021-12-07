@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createSortButton = (title, isActive = false) => {
   const activeClass = isActive ? 'sort__button--active' : '';
@@ -15,22 +15,9 @@ const createSortButtonsTemplate = () =>(
   </ul>`
 );
 
-export default class SortButtonView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
+export default class SortButtonView extends AbstractView {
 
   get template() {
     return createSortButtonsTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
