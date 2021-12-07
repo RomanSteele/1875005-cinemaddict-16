@@ -92,14 +92,14 @@ const renderFilmCard = (container, card, comments) => {
   };
 
   //Обработчик на карточку для открытия попапа
-  filmCard.setPopupOpenHandler (() => {
+  filmCard.setOpenHandler (() => {
     openCurrentPopup();
     siteMain.classList.add('hide-overflow');
     document.addEventListener('keydown',onEscKeyDown);
   });
 
   //Для закрытия попапа
-  filmPopup.setClosePopupHandler(() => {
+  filmPopup.setCloseHandler(() => {
     erasePopup(onEscKeyDown);
   });
 

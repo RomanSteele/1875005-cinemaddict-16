@@ -7,7 +7,7 @@ export const createExtraListsTemplate = (name) =>(
 </section>`
 );
 
-export default class EmptyListView extends AbstractView {
+export default class AdditionalListsView extends AbstractView {
 
   get template() {
     return createExtraListsTemplate();

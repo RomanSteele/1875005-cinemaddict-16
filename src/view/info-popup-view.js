@@ -161,12 +161,12 @@ export default class InfoPopupView extends AbstractView {
     return createInfoPopupTemplate(this.#card,this.#comment);
   }
 
-  setClosePopupHandler = (callback) => {
+  setCloseHandler = (callback) => {
     this._callback.closePopup = callback;
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#popupCloseHandler);
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#onCloseButtonClick);
   }
 
-  #popupCloseHandler = () => {
+  #onCloseButtonClick = () => {
     this._callback.closePopup();
   }
 }
