@@ -161,13 +161,54 @@ export default class InfoPopupView extends AbstractView {
     return createInfoPopupTemplate(this.#card,this.#comment);
   }
 
-  setCloseHandler = (callback) => {
+  //для закрытия
+  setClosePopupHandler = (callback) => {
     this._callback.closePopup = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#onCloseButtonClick);
   }
 
-  #onCloseButtonClick = () => {
+  #onCloseButtonClick = (evt) => {
+    evt.preventDefault();
     this._callback.closePopup();
+  }
+
+  //Вотчлист
+  setWatchlistClickHandler = (callback) => {
+    this._callback.clickWatchlist = callback;
+
+    this.element.querySelector('.film-details__control-button--watchlist')
+      .addEventListener('click', this.#onAddToWatchlistClick);
+  }
+
+  #onAddToWatchlistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchlist();
+  }
+
+  //Просмотренное
+  setWatchedlistClickHandler = (callback) => {
+    this._callback.clickWatchedList = callback;
+
+    this.element.querySelector('.film-details__control-button--watched')
+      .addEventListener('click', this.#onAddToWatchedlistClick);
+  }
+
+  #onAddToWatchedlistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchedList();
+  }
+
+  //Избранное
+  setFavoritelistClickHandler = (callback) => {
+    this._callback.clickFavoriteList = callback;
+
+    this.element.querySelector('.film-details__control-button--favorite')
+      .addEventListener('click', this.#onAddToFavoritelistClick);
+  }
+
+  #onAddToFavoritelistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickFavoriteList();
   }
 }
 

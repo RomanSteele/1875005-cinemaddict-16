@@ -1,107 +1,175 @@
-import ProfileRatingView from './view/profile-rating-view.js';
-import MenuView from './view/menu-view.js';
-import SortButtonView from './view/sort-button-view.js';
-import FilmsView from './view/films-view.js';
-import FilmsSectionView from './view/films-section-view.js';
-import FilmsContainerView from './view/films-container-view.js';
-import FilmCardView from './view/film-card-view.js';
-import InfoPopupView from './view/info-popup-view.js';
-import ShowMoreButtonView from './view/show-more-button-view.js';
-import EmptyListView from './view/empty-list-view.js';
+import MenuView from '../view/menu-view.js';
+import SortButtonView from '../view/sort-button-view.js';
+import FilmsSectionView from '../view/films-section-view.js';
+import FilmsContainerView from '../view/films-container-view.js';
+import ShowMoreButtonView from '../view/show-more-button-view.js';
+import EmptyListView from '../view/empty-list-view.js';
 
-import SingleCardPresenter from'./film-presenter.js';
+import { RenderPosition, render, remove} from '../render.js';
+import { SortType } from '../view/utils.js';
+import {updateItemById, sortByDate, sortByRating} from '../src-utils.js';
 
-import {RenderPosition, render} from './render.js';
+import SingleCardPresenter from './film-presenter.js';
 
-const FIRST_FIVE_CARDS_COUNT = 5;
 const CARDS_PER_STEP = 5;
 
 
 export default class FilmsPresenter {
 
-  #filmsBoard = null;
+  #container = null;
 
-  //#profileRatingComponent = new ProfileRatingView();
-  //#menuComponent = new MenuView();
-  //#sortComponent = new SortButtonView();
-  #filmsComponent = new FilmsView();
+
+  #sortComponent = new SortButtonView();
   #filmsSectionComponent = new FilmsSectionView();
   #emptyListComponent = new EmptyListView()
   #filmContainerComponent = new FilmsContainerView();
+  #showMoreButtonComponent = new ShowMoreButtonView();
 
+
+  #filmPresenter = new Map();
+
+
+  #renderedFilmCount = CARDS_PER_STEP;
   #films = [];
+  #filters = [];
+  #menuComponent = null;
+  #sourcedFilms = [];
+  #currentSortType = SortType.DEFAULT;
 
 
-  constructor(filmsBoard) {
-    this.#filmsBoard = filmsBoard;
+  constructor(container) {
+    this.#container = container;
   }
 
 
-  init = (films) => {
+  init = (films, filters) => {
     this.#films = [...films];
+    this.#filters = [...filters];
+    this.#sourcedFilms = [...films];
 
-    render(this.#filmsBoard, this.#filmsSectionComponent, RenderPosition.BEFOREEND);
-    render(this.#filmsSectionComponent, this.#filmContainerComponent, RenderPosition.BEFOREEND);
+    this.#render();
+  }
 
+
+  //Отрисовка секции, карточек, меню и тд +  логика по отрисовке пустого листа
+  #render = () => {
+    if (this.#films.length === 0) {
+      render(this.#filmsSectionComponent, this.#emptyListComponent, RenderPosition.BEFORE_END);
+    } else {
+      this.#renderFilmsFilters();
+      this.#renderCards();
+    }
+
+    render(this.#container, this.#filmsSectionComponent, RenderPosition.BEFORE_END);
+    render(this.#filmsSectionComponent, this.#filmContainerComponent, RenderPosition.BEFORE_END);
+
+    this.#renderSort();
+    this.#renderShowMoreButton();
+  }
+
+
+  //Отрисовка сортировки
+  #sortTasks = (sortType) => {
+    switch (sortType) {
+      case SortType.DATE:
+        this.#films.sort(sortByDate);
+        break;
+      case SortType.RATING:
+        this.#films.sort(sortByRating);
+        break;
+      default:
+        this.#films = [...this.#sourcedFilms];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortTasks(sortType);
+    this.#clear();
     this.#renderCards();
+    this.#renderShowMoreButton();
   }
 
-/*
-//Отрисовка сортировки
   #renderSort = () => {
-
+    render(this.#container,this.#sortComponent, RenderPosition.AFTER_BEGIN);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
-*/
-
-//Отрисовка карточки
-#renderCard = (task) => {
-const cardPresenter = new SingleCardPresenter(this.#filmContainerComponent);
-cardPresenter.init(task);
-}
 
 
-//Отрисовка 5 первых карточек
+  // Отрисует одну карточку
+  #renderCard = (film, comments) => {
+    const presenter = new SingleCardPresenter(
+      this.#filmContainerComponent,
+      this.#handleFilmChange,
+      this.#handleModeChange,
+    );
+    presenter.init(film, comments);
+    this.#filmPresenter.set(film.id, presenter);
+  }
+
+  // Отрисует первые 5 карточек
   #renderCards = () => {
-    for (let i = 0; i < Math.min(this.#filmCards.length, FIRST_FIVE_CARDS_COUNT); i++) {
-      this.#renderCard();
+    for (let i = 0; i < Math.min(this.#films.length, CARDS_PER_STEP); i++) {
+      this.#renderCard(this.#films[i], this.#films[i].comments);
+    }
+  }
+
+  //Очистит весь список
+  #clear = () => {
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+    this.#renderedFilmCount = CARDS_PER_STEP;
+    remove(this.#showMoreButtonComponent);
+  }
+
+
+  #handleModeChange = () => { // changeMode
+    this.#filmPresenter.forEach((presenter) => presenter.resetView());
+  }
+
+
+  //Перерисовка фильма
+  #handleFilmChange = (updatedFilm) => {
+    this.#films = updateItemById(this.#films, updatedFilm);
+    this.#sourcedFilms = updateItemById(this.#sourcedFilms, updatedFilm);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm);
+  }
+
+
+  //Меню с фильтрами
+  #renderFilmsFilters = () => {
+    this.#menuComponent = new MenuView(this.#filters);
+    render(this.#container, this.#menuComponent, RenderPosition.BEFORE_BEGIN);
+  };
+
+
+  //Обработчик кнопки show more
+  #onShowMoreButtonClickHandler = () => {
+    this.#films
+      .slice(this.#renderedFilmCount, this.#renderedFilmCount + CARDS_PER_STEP)
+      .forEach((film) => this.#renderCard(film, film.comments));
+
+
+    this.#renderedFilmCount += CARDS_PER_STEP;
+
+    if (this.#renderedFilmCount >= this.#films.length) {
+      remove(this.#showMoreButtonComponent);
     }
   }
 
 
-//Отрисавка заглушки
-  #renderNoTasks = () => {
-
-if (this.#filmCards.length > 0) {
-  render(this.#filmsComponent, this.#filmsSectionComponent, RenderPosition.BEFORE_END);
-} else {
-  render(this.#filmsComponent, new EmptyListView().element, RenderPosition.BEFORE_END);
-  siteMain.removeChild(sortSection.element);
-}
-  }
-
-
-//Отрисовка кнопки showmore
+  //Отрисовка кнопки show more
   #renderShowMoreButton = () => {
+    if(this.#films.length > CARDS_PER_STEP){
+      render(this.#filmsSectionComponent, this.#showMoreButtonComponent, RenderPosition.BEFORE_END);
 
-    const showMoreButtonView = new ShowMoreButtonView();
-
-    if (this.#filmCards.length > CARDS_PER_STEP) {
-      let renderedCardsCount = CARDS_PER_STEP;
-      render(filmSection.element, showMoreButtonView.element, RenderPosition.BEFORE_END);
-
-      showMoreButtonView.setClickHandler(() => {
-        this.#filmCards
-          .slice(renderedCardsCount, renderedCardsCount + CARDS_PER_STEP)
-          .forEach((card) => renderFilmCard(containerSection.element, card, card.comments));
-
-
-        renderedCardsCount += CARDS_PER_STEP;
-
-        if (renderedCardsCount >= this.#filmCards.length) {
-          showMoreButtonView.element.remove();
-        }
-      });
+      this.#showMoreButtonComponent.setClickHandler(this.#onShowMoreButtonClickHandler);
     }
   }
-
 }
+

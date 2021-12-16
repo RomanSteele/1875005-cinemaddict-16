@@ -52,24 +52,69 @@ const createFilmCardTemplate = (film) => {
 };
 
 export default class FilmCardView extends AbstractView {
-  #card = null;
+  #film = null;
 
-  constructor(card) {
+  constructor(film) {
     super();
-    this.#card = card;
+    this.#film = film;
   }
 
   get template() {
-    return createFilmCardTemplate(this.#card);
+    return createFilmCardTemplate(this.#film);
   }
 
-  setOpenHandler = (callback) => {
-    this._callback.openPopup = callback;
-    this.element.querySelector('.film-card__link').addEventListener('click', this.#onCardLinkClick);
+  //для клика
+
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#onLinkClick);
   }
 
-  #onCardLinkClick = (evt) => {
+  #onLinkClick = (evt) => {
     evt.preventDefault();
-    this._callback.openPopup();
+    this._callback.click();
   }
+
+  //Вотчлист
+
+  setWatchlistClickHandler = (callback) => {
+    this._callback.clickWatchlist = callback;
+
+    this.element.querySelector('.film-card__controls-item--add-to-watchlist')
+      .addEventListener('click', this.#onAddToWatchlistClick);
+  }
+
+  #onAddToWatchlistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchlist();
+  }
+
+  //Просмотренное
+
+  setWatchedlistClickHandler = (callback) => {
+    this._callback.clickWatchedList = callback;
+
+    this.element.querySelector('.film-card__controls-item--mark-as-watched')
+      .addEventListener('click', this.#onAddToWatchedlistClick);
+  }
+
+  #onAddToWatchedlistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchedList();
+  }
+
+  //Избранное
+
+  setFavoritelistClickHandler = (callback) => {
+    this._callback.clickFavoriteList = callback;
+
+    this.element.querySelector('.film-card__controls-item--favorite')
+      .addEventListener('click', this.#onAddToFavoritelistClick);
+  }
+
+  #onAddToFavoritelistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickFavoriteList();
+  }
+
 }

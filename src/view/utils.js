@@ -8,3 +8,10 @@ const shiftDurationToHours = (timeInMinutes) => {
 };
 
 export {shiftDurationToHours};
+
+// Для сортировки
+export const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
