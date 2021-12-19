@@ -1,5 +1,6 @@
 import AbstractView from './view/abstract-view.js';
 
+
 export const RenderPosition = {
   BEFORE_BEGIN: 'beforebegin',
   AFTER_BEGIN: 'afterbegin',
@@ -28,9 +29,41 @@ export const render = (container, element, place) => {
   }
 };
 
+
 export const createElement = (template) => {
   const newContainer = document.createElement('div');
   newContainer.innerHTML = template;
-  return newContainer.firstChild;
+  return newContainer.firstElementChild;
 };
 
+
+export const replace = (newComponent, oldComponent) => {
+  if (newComponent === null || oldComponent === null) {
+    throw new Error('Can\'t replace unexisting elements');
+  }
+
+  const newChild = newComponent instanceof AbstractView ? newComponent.element : newComponent;
+  const oldChild = oldComponent instanceof AbstractView ? oldComponent.element : oldComponent;
+
+  const parent = oldChild.parentElement;
+
+  if (parent === null) {
+    throw new Error('Parent element doesn\'t exist');
+  }
+
+  parent.replaceChild(newChild, oldChild);
+};
+
+
+export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
+  if (!(component instanceof AbstractView)) {
+    throw new Error('Can remove only components');
+  }
+
+  component.element.remove();
+  component.removeElement();
+};

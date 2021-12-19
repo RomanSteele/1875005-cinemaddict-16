@@ -1,6 +1,7 @@
 import {CARD_DESCRIPTION, POSTERS, TITLES, ACTORS, WRITERS, COUNTRY} from './data.js';
 import {generateComment} from './comment.js';
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
 
 // Случайное значение
@@ -72,8 +73,12 @@ const generateCountry = () => {
 //если Already watched - вернёт дату, если нет - вернёт null
 const getWatchingDate = (isWatched) => (isWatched ===  true ? dayjs() : null);
 
+//Случайная дата для проверки сортировки
+const randomDate =(start, end) => new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+
 // Создаёт данные для карточки
 export const generateCard = () => ({
+  id: nanoid(),
   title: generateTitle(),
   alternativeTitle: generateTitle(),
   rating: getRandomFloatInteger(),
@@ -82,7 +87,7 @@ export const generateCard = () => ({
   director: generateTitle(),
   writers: WRITERS,
   actors: ACTORS,
-  release: dayjs(),
+  release: dayjs(randomDate(new Date(2012, 0, 1), new Date())),
   releaseCountry: generateCountry(),
   duration: getRandomInteger(30,240),
   genres: getRandomGenre(),

@@ -1,4 +1,4 @@
-import {shiftDurationToHours} from './utils.js';
+import {shiftDurationToHours} from './helpers.js';
 import AbstractView from './abstract-view.js';
 
 //для создания строк описания фильма
@@ -161,13 +161,58 @@ export default class InfoPopupView extends AbstractView {
     return createInfoPopupTemplate(this.#card,this.#comment);
   }
 
-  setCloseHandler = (callback) => {
+  //для закрытия
+  setClosePopupHandler = (callback) => {
     this._callback.closePopup = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#onCloseButtonClick);
   }
 
-  #onCloseButtonClick = () => {
+
+  //Вотчлист
+  setWatchlistClickHandler = (callback) => {
+    this._callback.clickWatchlist = callback;
+
+    this.element.querySelector('.film-details__control-button--watchlist')
+      .addEventListener('click', this.#onWatchlistClick);
+  }
+
+
+  //Просмотренное
+  setWatchedlistClickHandler = (callback) => {
+    this._callback.clickWatchedList = callback;
+
+    this.element.querySelector('.film-details__control-button--watched')
+      .addEventListener('click', this.#onWatchedClick);
+  }
+
+
+  //Избранное
+  setFavoritelistClickHandler = (callback) => {
+    this._callback.clickFavoriteList = callback;
+
+    this.element.querySelector('.film-details__control-button--favorite')
+      .addEventListener('click', this.#onFavoriteClick);
+  }
+
+
+  #onCloseButtonClick = (evt) => {
+    evt.preventDefault();
     this._callback.closePopup();
+  }
+
+  #onWatchlistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchlist();
+  }
+
+  #onWatchedClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchedList();
+  }
+
+  #onFavoriteClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickFavoriteList();
   }
 }
 
