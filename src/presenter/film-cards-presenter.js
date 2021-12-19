@@ -6,8 +6,8 @@ import ShowMoreButtonView from '../view/show-more-button-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 
 import { RenderPosition, render, remove} from '../render.js';
-import { SortType } from '../view/utils.js';
-import {updateItemById, sortByDate, sortByRating} from '../src-utils.js';
+import { SortType } from '../view/helpers.js';
+import {updateItemById, sortFilmsByDate, sortFilmsByRating} from '../utils.js';
 
 import SingleCardPresenter from './film-presenter.js';
 
@@ -26,7 +26,7 @@ export default class FilmsPresenter {
   #showMoreButtonComponent = new ShowMoreButtonView();
 
 
-  #filmPresenter = new Map();
+  #filmsPresenter = new Map();
 
 
   #renderedFilmCount = CARDS_PER_STEP;
@@ -68,14 +68,13 @@ export default class FilmsPresenter {
   }
 
 
-  //Отрисовка сортировки
   #sortTasks = (sortType) => {
     switch (sortType) {
       case SortType.DATE:
-        this.#films.sort(sortByDate);
+        this.#films.sort(sortFilmsByDate);
         break;
       case SortType.RATING:
-        this.#films.sort(sortByRating);
+        this.#films.sort(sortFilmsByRating);
         break;
       default:
         this.#films = [...this.#sourcedFilms];
@@ -95,8 +94,10 @@ export default class FilmsPresenter {
     this.#renderShowMoreButton();
   }
 
+
+  //Отрисовка сортировки
   #renderSort = () => {
-    render(this.#container,this.#sortComponent, RenderPosition.AFTER_BEGIN);
+    render(this.#container,this.#sortComponent, RenderPosition.BEFORE_BEGIN);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
@@ -109,7 +110,7 @@ export default class FilmsPresenter {
       this.#handleModeChange,
     );
     presenter.init(film, comments);
-    this.#filmPresenter.set(film.id, presenter);
+    this.#filmsPresenter.set(film.id, presenter);
   }
 
   // Отрисует первые 5 карточек
@@ -121,15 +122,16 @@ export default class FilmsPresenter {
 
   //Очистит весь список
   #clear = () => {
-    this.#filmPresenter.forEach((presenter) => presenter.destroy());
-    this.#filmPresenter.clear();
+    this.#filmsPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmsPresenter.clear();
     this.#renderedFilmCount = CARDS_PER_STEP;
     remove(this.#showMoreButtonComponent);
   }
 
 
-  #handleModeChange = () => { // changeMode
-    this.#filmPresenter.forEach((presenter) => presenter.resetView());
+  // changeMode
+  #handleModeChange = () => {
+    this.#filmsPresenter.forEach((presenter) => presenter.resetView());
   }
 
 
@@ -137,7 +139,7 @@ export default class FilmsPresenter {
   #handleFilmChange = (updatedFilm) => {
     this.#films = updateItemById(this.#films, updatedFilm);
     this.#sourcedFilms = updateItemById(this.#sourcedFilms, updatedFilm);
-    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm);
+    this.#filmsPresenter.get(updatedFilm.id).init(updatedFilm);
   }
 
 
@@ -146,6 +148,16 @@ export default class FilmsPresenter {
     this.#menuComponent = new MenuView(this.#filters);
     render(this.#container, this.#menuComponent, RenderPosition.BEFORE_BEGIN);
   };
+
+
+  //Отрисовка кнопки show more
+  #renderShowMoreButton = () => {
+    if(this.#films.length > CARDS_PER_STEP){
+      render(this.#filmsSectionComponent, this.#showMoreButtonComponent, RenderPosition.BEFORE_END);
+
+      this.#showMoreButtonComponent.setClickHandler(this.#onShowMoreButtonClickHandler);
+    }
+  }
 
 
   //Обработчик кнопки show more
@@ -161,15 +173,4 @@ export default class FilmsPresenter {
       remove(this.#showMoreButtonComponent);
     }
   }
-
-
-  //Отрисовка кнопки show more
-  #renderShowMoreButton = () => {
-    if(this.#films.length > CARDS_PER_STEP){
-      render(this.#filmsSectionComponent, this.#showMoreButtonComponent, RenderPosition.BEFORE_END);
-
-      this.#showMoreButtonComponent.setClickHandler(this.#onShowMoreButtonClickHandler);
-    }
-  }
 }
-

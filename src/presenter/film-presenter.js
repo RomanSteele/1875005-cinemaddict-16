@@ -51,6 +51,18 @@ export default class SingleCardPresenter {
       }
     }
 
+    //Навесит все обработчики
+  #setAllHandlers = () => {
+    this.#filmCard.setClickHandler(this.#handleFilmCardClick);
+    this.#filmCard.setWatchlistClickHandler(this.#handleWatchlistClick);
+    this.#filmCard.setWatchedlistClickHandler(this.#handleWatchedClick);
+    this.#filmCard.setFavoritelistClickHandler(this.#handleFavoriteClick);
+
+    this.#filmPopup.setClosePopupHandler(this.#handleCloseButtonClick);
+    this.#filmPopup.setWatchlistClickHandler(this.#handleWatchlistClick);
+    this.#filmPopup.setWatchedlistClickHandler(this.#handleWatchedClick);
+    this.#filmPopup.setFavoritelistClickHandler(this.#handleFavoriteClick);
+  };
 
 //Отрисует фильм, попап.
 #renderFilm = () => {
@@ -74,6 +86,9 @@ export default class SingleCardPresenter {
     replace(this.#filmCard, prevFilmFilm);
     replace(this.#filmPopup, prevFilmPopup);
   }
+
+  remove(prevFilmFilm);
+  remove(prevFilmPopup);
 }
 
 
@@ -94,31 +109,30 @@ export default class SingleCardPresenter {
   };
 
 
-  //Обработчик откр
-  #setOpenHandler = () => {
+  //Escape
+   #onEscKeyDown = (evt) => {
+     if (evt.key === 'Escape' || evt.key === 'Esc') {
+       evt.preventDefault();
+       this.#destroyPopup();
+       document.removeEventListener('keydown',this.#onEscKeyDown);
+     }
+   };
+
+   //Обработчик откр
+  #handleFilmCardClick = () => {
     this.#openPopup();
     document.addEventListener('keydown',this.#onEscKeyDown);
   };
 
 
   //Обработчик закр
-  #setCloseHandler = () => {
+  #handleCloseButtonClick = () => {
     this.#destroyPopup();
     document.removeEventListener('keydown',this.#onEscKeyDown);
   };
 
-
-  //Escape
-   #onEscKeyDown = (evt) => {
-     if (evt.key === 'Escape' || evt.key === 'Esc') {
-       evt.preventDefault();
-       this.#destroyPopup();
-     }
-   };
-
-
   //Вотчлист
-  #setWatchlistClickHandler = () => {
+  #handleWatchlistClick = () => {
     this.#changeData({
       ...this.#film,
       inWatchlist: !this.#film.inWatchlist,
@@ -127,18 +141,18 @@ export default class SingleCardPresenter {
 
 
   //Просмотренное
-  #setWatchedlistClickHandler = () => {
+  #handleWatchedClick = () => {
+    const isWatched = !this.#film.isWatched;
     this.#changeData({
       ...this.#film,
-      isWatched: !this.#film.isWatched,
-      watchingDate: new Date(),
+      isWatched,
+      watchingDate: isWatched ? new Date() : null,
     });
-
   };
 
 
   //Избранное
-  #setFavoritelistClickHandler = () => {
+  #handleFavoriteClick = () => {
     this.#changeData({
       ...this.#film,
       isFavourite: !this.#film.isFavourite,
@@ -146,16 +160,4 @@ export default class SingleCardPresenter {
   };
 
 
-  //Навесит все обработчики
-  #setAllHandlers = () => {
-    this.#filmCard.setClickHandler(this.#setOpenHandler);
-    this.#filmCard.setWatchlistClickHandler(this.#setWatchlistClickHandler);
-    this.#filmCard.setWatchedlistClickHandler(this.#setWatchedlistClickHandler);
-    this.#filmCard.setFavoritelistClickHandler(this.#setFavoritelistClickHandler);
-
-    this.#filmPopup.setClosePopupHandler(this.#setCloseHandler);
-    this.#filmPopup.setWatchlistClickHandler(this.#setWatchlistClickHandler);
-    this.#filmPopup.setWatchedlistClickHandler(this.#setWatchedlistClickHandler);
-    this.#filmPopup.setFavoritelistClickHandler(this.#setFavoritelistClickHandler);
-  };
 }

@@ -12,8 +12,8 @@ const createNavigationTemplate = ({ name, title, count, isActive } = {}) => {
 
 const createMenuTemplate = (filters) => {
   const filterItemsTemplate = filters
-    .map((filter) => createNavigationTemplate(filter))
-    .join('\n');
+    .map(createNavigationTemplate)
+    .join('');
 
   return `<nav class="main-navigation">
   <div class="main-navigation__items">

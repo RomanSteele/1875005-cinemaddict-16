@@ -1,4 +1,4 @@
-import {shiftDurationToHours} from './utils.js';
+import {shiftDurationToHours} from './helpers.js';
 import AbstractView from './abstract-view.js';
 
 
@@ -70,11 +70,6 @@ export default class FilmCardView extends AbstractView {
     this.element.querySelector('.film-card__link').addEventListener('click', this.#onLinkClick);
   }
 
-  #onLinkClick = (evt) => {
-    evt.preventDefault();
-    this._callback.click();
-  }
-
   //Вотчлист
 
   setWatchlistClickHandler = (callback) => {
@@ -84,10 +79,6 @@ export default class FilmCardView extends AbstractView {
       .addEventListener('click', this.#onAddToWatchlistClick);
   }
 
-  #onAddToWatchlistClick = (evt) => {
-    evt.preventDefault();
-    this._callback.clickWatchlist();
-  }
 
   //Просмотренное
 
@@ -95,12 +86,7 @@ export default class FilmCardView extends AbstractView {
     this._callback.clickWatchedList = callback;
 
     this.element.querySelector('.film-card__controls-item--mark-as-watched')
-      .addEventListener('click', this.#onAddToWatchedlistClick);
-  }
-
-  #onAddToWatchedlistClick = (evt) => {
-    evt.preventDefault();
-    this._callback.clickWatchedList();
+      .addEventListener('click', this.#onMarkAsWatchedClick);
   }
 
   //Избранное
@@ -109,10 +95,26 @@ export default class FilmCardView extends AbstractView {
     this._callback.clickFavoriteList = callback;
 
     this.element.querySelector('.film-card__controls-item--favorite')
-      .addEventListener('click', this.#onAddToFavoritelistClick);
+      .addEventListener('click', this.#onFavoriteClick);
   }
 
-  #onAddToFavoritelistClick = (evt) => {
+
+  #onLinkClick = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  #onAddToWatchlistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchlist();
+  }
+
+  #onMarkAsWatchedClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchedList();
+  }
+
+  #onFavoriteClick = (evt) => {
     evt.preventDefault();
     this._callback.clickFavoriteList();
   }

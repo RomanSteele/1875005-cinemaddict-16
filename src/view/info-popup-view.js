@@ -1,4 +1,4 @@
-import {shiftDurationToHours} from './utils.js';
+import {shiftDurationToHours} from './helpers.js';
 import AbstractView from './abstract-view.js';
 
 //для создания строк описания фильма
@@ -167,46 +167,50 @@ export default class InfoPopupView extends AbstractView {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#onCloseButtonClick);
   }
 
-  #onCloseButtonClick = (evt) => {
-    evt.preventDefault();
-    this._callback.closePopup();
-  }
 
   //Вотчлист
   setWatchlistClickHandler = (callback) => {
     this._callback.clickWatchlist = callback;
 
     this.element.querySelector('.film-details__control-button--watchlist')
-      .addEventListener('click', this.#onAddToWatchlistClick);
+      .addEventListener('click', this.#onWatchlistClick);
   }
 
-  #onAddToWatchlistClick = (evt) => {
-    evt.preventDefault();
-    this._callback.clickWatchlist();
-  }
 
   //Просмотренное
   setWatchedlistClickHandler = (callback) => {
     this._callback.clickWatchedList = callback;
 
     this.element.querySelector('.film-details__control-button--watched')
-      .addEventListener('click', this.#onAddToWatchedlistClick);
+      .addEventListener('click', this.#onWatchedClick);
   }
 
-  #onAddToWatchedlistClick = (evt) => {
-    evt.preventDefault();
-    this._callback.clickWatchedList();
-  }
 
   //Избранное
   setFavoritelistClickHandler = (callback) => {
     this._callback.clickFavoriteList = callback;
 
     this.element.querySelector('.film-details__control-button--favorite')
-      .addEventListener('click', this.#onAddToFavoritelistClick);
+      .addEventListener('click', this.#onFavoriteClick);
   }
 
-  #onAddToFavoritelistClick = (evt) => {
+
+  #onCloseButtonClick = (evt) => {
+    evt.preventDefault();
+    this._callback.closePopup();
+  }
+
+  #onWatchlistClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchlist();
+  }
+
+  #onWatchedClick = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchedList();
+  }
+
+  #onFavoriteClick = (evt) => {
     evt.preventDefault();
     this._callback.clickFavoriteList();
   }

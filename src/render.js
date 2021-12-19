@@ -33,17 +33,17 @@ export const render = (container, element, place) => {
 export const createElement = (template) => {
   const newContainer = document.createElement('div');
   newContainer.innerHTML = template;
-  return newContainer.firstChild;
+  return newContainer.firstElementChild;
 };
 
 
-export const replace = (newElement, oldElement) => {
-  if (newElement === null || oldElement === null) {
+export const replace = (newComponent, oldComponent) => {
+  if (newComponent === null || oldComponent === null) {
     throw new Error('Can\'t replace unexisting elements');
   }
 
-  const newChild = newElement instanceof AbstractView ? newElement.element : newElement;
-  const oldChild = oldElement instanceof AbstractView ? oldElement.element : oldElement;
+  const newChild = newComponent instanceof AbstractView ? newComponent.element : newComponent;
+  const oldChild = oldComponent instanceof AbstractView ? oldComponent.element : oldComponent;
 
   const parent = oldChild.parentElement;
 
