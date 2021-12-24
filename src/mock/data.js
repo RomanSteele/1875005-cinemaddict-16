@@ -42,14 +42,7 @@ export const COMMENTS_TEXT = [
   'Very very old. Meh',
   'Almost two hours? Seriously?',
 ];
-/*
-export const COMMENTS_EMOJI = [
-  'smile',
-  'sleeping',
-  'puke',
-  'angry',
-];
-*/
+
 export const ACTORS = [
   'Doe Doe',
   'Tim Tim',
