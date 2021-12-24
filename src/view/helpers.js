@@ -13,3 +13,11 @@ export const SortType = {
   DATE: 'date',
   RATING: 'rating',
 };
+
+//Эмодзи
+export const COMMENTS_EMOJI = [
+  'smile',
+  'sleeping',
+  'puke',
+  'angry',
+];

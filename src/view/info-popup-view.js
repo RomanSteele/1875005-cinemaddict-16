@@ -1,5 +1,5 @@
-import {shiftDurationToHours} from './helpers.js';
-import AbstractView from './abstract-view.js';
+import {shiftDurationToHours, COMMENTS_EMOJI} from './helpers.js';
+import SmartView from './smart-view.js';
 
 //для создания строк описания фильма
 const createTableRowTemplate = (term, cell) => (
@@ -12,6 +12,7 @@ const createTableRowTemplate = (term, cell) => (
 //Разметка для жанров
 const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
+
 //Подставляет в разметку Genres или Genre
 const useGenreOrGenres = (genre) => {
   if (genre.length > 1) {
@@ -20,6 +21,7 @@ const useGenreOrGenres = (genre) => {
   return 'Genre';
 };
 
+//Создание комментария
 const createCommentTemplate = ({ id, author, text, date, emotion }) => (
   `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
@@ -36,6 +38,17 @@ const createCommentTemplate = ({ id, author, text, date, emotion }) => (
 </li>`
 );
 
+
+const createEmotionsTemplate = (emotionNames, emotion) => emotionNames.map((currentEmotion) => {
+  const isChecked = (currentEmotion === emotion) ? 'checked' : '';
+
+  return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${currentEmotion}" value="${currentEmotion}" ${isChecked}>
+  <label class="film-details__emoji-label" for="emoji-${currentEmotion}">
+    <img src="./images/emoji/${currentEmotion}.png" width="30" height="30" alt="emoji-${currentEmotion}">
+  </label>`;
+}).join('');
+
+
 const createControlButtonTemplate = (name, title, isActive) => {
   const activeClass = isActive ? 'film-details__control-button--active' : '';
   return (
@@ -44,7 +57,6 @@ const createControlButtonTemplate = (name, title, isActive) => {
 };
 
 const createCommentsTemplate = (comments) => comments.map(createCommentTemplate).join('');
-
 
 export const createInfoPopupTemplate = (film, comments) => {
 
@@ -65,12 +77,17 @@ export const createInfoPopupTemplate = (film, comments) => {
     inWatchlist,
     isWatched,
     isFavourite,
+    comment,
+    emotion,
     //watchingDate,
   } = film;
 
-
   const commentsTemplate = createCommentsTemplate(comments);
   const genresTemplate = genres.map(createGenreTemplate).join('');
+  const emotionsTemplate = createEmotionsTemplate(COMMENTS_EMOJI, emotion);
+
+  const commentEmotionTemplate = (emotion) ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : '';
+
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -120,46 +137,40 @@ export const createInfoPopupTemplate = (film, comments) => {
         ${commentsTemplate}
         </ul>
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">
+          ${commentEmotionTemplate}
+          </div>
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${comment}</textarea>
           </label>
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-            <label class="film-details__emoji-label" for="emoji-puke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
+          ${emotionsTemplate}
           </div>
         </div>
       </section>`;
 };
 
-export default class InfoPopupView extends AbstractView {
+export default class InfoPopupView extends SmartView {
 
-  #card = null;
-  #comment = null;
-
-  constructor(card,comment) {
+  constructor(card) {
     super();
-    this.#card = card;
-    this.#comment = comment;
+    this._data = InfoPopupView.parseFilmToData({ ...card });
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createInfoPopupTemplate(this.#card,this.#comment);
+    return createInfoPopupTemplate(this._data, this._data.comments);
   }
+
+  restoreHandlers = () => {
+    this.setClosePopupHandler(this._callback.closePopup);
+    this.setWatchlistClickHandler(this._callback.clickWatchlist);
+    this.setWatchedlistClickHandler(this._callback.clickWatchedList);
+    this.setFavoritelistClickHandler(this._callback.clickFavoriteList);
+    this.setCommentAddHandler(this._callback.commentAdd);
+    this.#setInnerHandlers();
+  };
 
   //для закрытия
   setClosePopupHandler = (callback) => {
@@ -195,6 +206,20 @@ export default class InfoPopupView extends AbstractView {
   }
 
 
+  //Добавление комментария
+  setCommentAddHandler = (callback) => {
+    this._callback.commentAdd = callback;
+    this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#onCommentAdd);
+  };
+
+
+  // Для эмодзи и ввода комментария
+  #setInnerHandlers = () => {
+    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#onCommentEmotionChange);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#onCommentInput);
+  };
+
+
   #onCloseButtonClick = (evt) => {
     evt.preventDefault();
     this._callback.closePopup();
@@ -214,5 +239,34 @@ export default class InfoPopupView extends AbstractView {
     evt.preventDefault();
     this._callback.clickFavoriteList();
   }
+
+  #onCommentEmotionChange = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      emotion: evt.target.value });
+  };
+
+  #onCommentInput = (evt) => {
+    this.updateData({
+      comment: evt.target.value
+    }, true);
+  };
+
+  #onCommentAdd = (evt) => {
+    if (!this._data.emotion || !this._data.comment) {
+      return;
+    }
+
+    if (evt.code === 'Enter' && evt.ctrlKey) {
+      const comment = {
+        emotion: this._data.emotion,
+        comment: this._data.comment,
+      };
+
+      this._callback.commentAdd(comment);
+    }
+  };
+
+  static parseFilmToData = (film) => ({ ...film, comment: '', emotion: null });
 }
 

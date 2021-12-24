@@ -1,4 +1,5 @@
-import { COMMENTS_NAMES, COMMENTS_TEXT, COMMENTS_EMOJI} from './data.js';
+import { COMMENTS_NAMES, COMMENTS_TEXT} from './data.js';
+import { COMMENTS_EMOJI } from '../view/helpers.js';
 import dayjs from 'dayjs';
 
 //Случайное число из диапазона
