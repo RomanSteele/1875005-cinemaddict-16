@@ -19,6 +19,7 @@ export default class SingleCardPresenter {
   #filmPopup = null;
 
   #film = null;
+  #comments = null;
 
   #mode = Mode.DEFAULT;
 
@@ -29,9 +30,11 @@ export default class SingleCardPresenter {
   }
 
 
-  init = (film) => {
+  init = (film, comments) => {
 
     this.#film = film;
+
+    this.#comments = comments;
 
     this.#renderFilm();
 
@@ -62,6 +65,7 @@ export default class SingleCardPresenter {
     this.#filmPopup.setWatchlistClickHandler(this.#handleWatchlistClick);
     this.#filmPopup.setWatchedlistClickHandler(this.#handleWatchedClick);
     this.#filmPopup.setFavoritelistClickHandler(this.#handleFavoriteClick);
+    //this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
   };
 
 //Отрисует фильм, попап.
@@ -71,7 +75,7 @@ export default class SingleCardPresenter {
   const prevFilmPopup = this.#filmPopup;
 
   this.#filmCard = new FilmCardView(this.#film);
-  this.#filmPopup = new InfoPopupView(this.#film, this.#film.comments);
+  this.#filmPopup = new InfoPopupView(this.#film, this.#comments);
 
   if (prevFilmFilm === null ) {
     render(this.#container, this.#filmCard, RenderPosition.BEFORE_END);
@@ -159,5 +163,17 @@ export default class SingleCardPresenter {
     });
   };
 
+/*
+  //Добавление комментария
+  #handleCommentAdd = (comment) => {
+    const newComment = { ...this.#comments, comment };
 
+    this.#film.comments.slice().push(newComment);
+
+    this.#changeData({
+      ...this.#film,
+      comments: [...this.#comments, newComment] });
+  };
+  */
 }
+

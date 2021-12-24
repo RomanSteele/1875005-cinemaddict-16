@@ -46,7 +46,6 @@ export default class FilmsPresenter {
     this.#films = [...films];
     this.#filters = [...filters];
     this.#sourcedFilms = [...films];
-
     this.#render();
   }
 

@@ -43,13 +43,6 @@ export const COMMENTS_TEXT = [
   'Almost two hours? Seriously?',
 ];
 
-export const COMMENTS_EMOJI = [
-  'smile',
-  'sleeping',
-  'puke',
-  'angry',
-];
-
 export const ACTORS = [
   'Doe Doe',
   'Tim Tim',
