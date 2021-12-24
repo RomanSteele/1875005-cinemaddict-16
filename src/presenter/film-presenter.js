@@ -65,7 +65,7 @@ export default class SingleCardPresenter {
     this.#filmPopup.setWatchlistClickHandler(this.#handleWatchlistClick);
     this.#filmPopup.setWatchedlistClickHandler(this.#handleWatchedClick);
     this.#filmPopup.setFavoritelistClickHandler(this.#handleFavoriteClick);
-    this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
+    //this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
   };
 
 //Отрисует фильм, попап.
@@ -163,6 +163,7 @@ export default class SingleCardPresenter {
     });
   };
 
+/*
   //Добавление комментария
   #handleCommentAdd = (comment) => {
     const newComment = { ...this.#comments, comment };
@@ -173,4 +174,6 @@ export default class SingleCardPresenter {
       ...this.#film,
       comments: [...this.#comments, newComment] });
   };
+  */
 }
+

@@ -15,7 +15,7 @@ export const SortType = {
 };
 
 //Эмодзи
-export const COMMENTS_EMOJI = [
+export const COMMENTS_EMOJIS = [
   'smile',
   'sleeping',
   'puke',

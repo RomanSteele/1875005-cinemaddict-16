@@ -1,4 +1,4 @@
-import {shiftDurationToHours, COMMENTS_EMOJI} from './helpers.js';
+import {shiftDurationToHours, COMMENTS_EMOJIS} from './helpers.js';
 import SmartView from './smart-view.js';
 
 //для создания строк описания фильма
@@ -58,7 +58,7 @@ const createControlButtonTemplate = (name, title, isActive) => {
 
 const createCommentsTemplate = (comments) => comments.map(createCommentTemplate).join('');
 
-export const createInfoPopupTemplate = (film, comments) => {
+export const createInfoPopupTemplate = (film) => {
 
   const {
     title,
@@ -82,9 +82,9 @@ export const createInfoPopupTemplate = (film, comments) => {
     //watchingDate,
   } = film;
 
-  const commentsTemplate = createCommentsTemplate(comments);
+  const commentsTemplate = createCommentsTemplate(film.comments);
   const genresTemplate = genres.map(createGenreTemplate).join('');
-  const emotionsTemplate = createEmotionsTemplate(COMMENTS_EMOJI, emotion);
+  const emotionsTemplate = createEmotionsTemplate(COMMENTS_EMOJIS, emotion);
 
   const commentEmotionTemplate = (emotion) ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : '';
 
@@ -132,7 +132,7 @@ export const createInfoPopupTemplate = (film, comments) => {
     </div>
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.comments.length}</span></h3>
         <ul class="film-details__comments-list">
         ${commentsTemplate}
         </ul>
@@ -152,15 +152,15 @@ export const createInfoPopupTemplate = (film, comments) => {
 
 export default class InfoPopupView extends SmartView {
 
-  constructor(card) {
+  constructor(film) {
     super();
-    this._data = InfoPopupView.parseFilmToData({ ...card });
+    this._data = InfoPopupView.parseFilmToData(film);
 
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createInfoPopupTemplate(this._data, this._data.comments);
+    return createInfoPopupTemplate(this._data);
   }
 
   restoreHandlers = () => {
@@ -168,7 +168,7 @@ export default class InfoPopupView extends SmartView {
     this.setWatchlistClickHandler(this._callback.clickWatchlist);
     this.setWatchedlistClickHandler(this._callback.clickWatchedList);
     this.setFavoritelistClickHandler(this._callback.clickFavoriteList);
-    this.setCommentAddHandler(this._callback.commentAdd);
+    this.setCommentAddHandler(this._callback.addComment);
     this.#setInnerHandlers();
   };
 
@@ -208,14 +208,14 @@ export default class InfoPopupView extends SmartView {
 
   //Добавление комментария
   setCommentAddHandler = (callback) => {
-    this._callback.commentAdd = callback;
-    this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#onCommentAdd);
+    this._callback.addComment = callback;
+    this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#onCommentInputKeydown);
   };
 
 
   // Для эмодзи и ввода комментария
   #setInnerHandlers = () => {
-    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#onCommentEmotionChange);
+    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#onEmotionListChange);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#onCommentInput);
   };
 
@@ -240,7 +240,7 @@ export default class InfoPopupView extends SmartView {
     this._callback.clickFavoriteList();
   }
 
-  #onCommentEmotionChange = (evt) => {
+  #onEmotionListChange = (evt) => {
     evt.preventDefault();
     this.updateData({
       emotion: evt.target.value });
@@ -252,7 +252,7 @@ export default class InfoPopupView extends SmartView {
     }, true);
   };
 
-  #onCommentAdd = (evt) => {
+  #onCommentInputKeydown = (evt) => {
     if (!this._data.emotion || !this._data.comment) {
       return;
     }
@@ -263,10 +263,10 @@ export default class InfoPopupView extends SmartView {
         comment: this._data.comment,
       };
 
-      this._callback.commentAdd(comment);
+      this._callback.addComment(comment);
     }
   };
 
-  static parseFilmToData = (film) => ({ ...film, comment: '', emotion: null });
+  static parseFilmToData = (film) => ({ ...film, comment: '', emotion: '' });
 }
 
