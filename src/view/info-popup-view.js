@@ -42,7 +42,6 @@ const createCommentTemplate = ({ id, author, text, date, emotion }) => (
 </li>`
 );
 
-//${dayjs(date).format('YYYY/MM/DD hh:mm')}
 
 const createEmotionsTemplate = (emotionNames, emotion) => emotionNames.map((currentEmotion) => {
   const isChecked = (currentEmotion === emotion) ? 'checked' : '';
