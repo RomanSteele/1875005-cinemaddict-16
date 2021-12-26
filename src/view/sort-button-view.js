@@ -34,7 +34,7 @@ export default class SortButtonView extends AbstractView {
   }
 
 
-  #onActiveClassRemove = () => {
+  #removeActiveClass = () => {
     const currentActiveClass = this.element.querySelector('.sort__button--active');
 
     if (currentActiveClass) {
@@ -48,7 +48,7 @@ export default class SortButtonView extends AbstractView {
     evt.preventDefault();
     this._callback.sortTypeChange(evt.target.dataset.sortType);
 
-    this.#onActiveClassRemove();
+    this.#removeActiveClass();
 
     evt.target.classList.add('sort__button--active');
   }
