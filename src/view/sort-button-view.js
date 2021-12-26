@@ -27,17 +27,29 @@ export default class SortButtonView extends AbstractView {
     return createSortButtonsTemplate(this.#sortType);
   }
 
+
   setSortTypeChangeHandler = (callback) => {
     this._callback.sortTypeChange = callback;
     this.element.addEventListener('click', this.#onSortTypeChangeClick);
   }
 
-  #onSortTypeChangeClick = (evt) => {
-    if (evt.target.tagName !== 'A') {
-      return;
+
+  #onActiveClassRemove = () => {
+    const currentActiveClass = this.element.querySelector('.sort__button--active');
+
+    if (currentActiveClass) {
+      currentActiveClass.classList.remove('sort__button--active');
     }
+  }
+
+
+  #onSortTypeChangeClick = (evt) => {
 
     evt.preventDefault();
     this._callback.sortTypeChange(evt.target.dataset.sortType);
+
+    this.#onActiveClassRemove();
+
+    evt.target.classList.add('sort__button--active');
   }
 }
