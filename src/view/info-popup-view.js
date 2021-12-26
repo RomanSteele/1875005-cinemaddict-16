@@ -1,5 +1,9 @@
 import {shiftDurationToHours, COMMENTS_EMOJIS} from './helpers.js';
 import SmartView from './smart-view.js';
+import dayjs from 'dayjs';
+
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 //для создания строк описания фильма
 const createTableRowTemplate = (term, cell) => (
@@ -31,13 +35,14 @@ const createCommentTemplate = ({ id, author, text, date, emotion }) => (
     <p class="film-details__comment-text">${text}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${author}</span>
-      <span class="film-details__comment-day">${date}</span>
+      <span class="film-details__comment-day">${dayjs(date).fromNow()}</span>
       <button class="film-details__comment-delete data-id="${id}">Delete</button>
     </p>
   </div>
 </li>`
 );
 
+//${dayjs(date).format('YYYY/MM/DD hh:mm')}
 
 const createEmotionsTemplate = (emotionNames, emotion) => emotionNames.map((currentEmotion) => {
   const isChecked = (currentEmotion === emotion) ? 'checked' : '';
