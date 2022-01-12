@@ -26,7 +26,7 @@ const createFilmCardTemplate = (film) => {
     comments,
     inWatchlist,
     isWatched,
-    isFavourite,
+    isFavorite,
   } = film;
 
   return`<article class="film-card">
@@ -45,7 +45,7 @@ const createFilmCardTemplate = (film) => {
           <div class="film-card__controls">
           ${createControlButtonTemplate('add-to-watchlist', 'Add to watchlist', inWatchlist )}
           ${createControlButtonTemplate('mark-as-watched', 'Mark as watched', isWatched)}
-          ${createControlButtonTemplate('favorite', 'Mark as favorite', isFavourite)}
+          ${createControlButtonTemplate('favorite', 'Mark as favorite', isFavorite)}
           </div>
   </article>
   `;

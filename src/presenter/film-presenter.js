@@ -1,6 +1,8 @@
 import FilmCardView from '../view/film-card-view.js';
 import InfoPopupView from '../view/info-popup-view.js';
 import { RenderPosition, render, remove, replace } from '../render.js';
+import {UserAction, UpdateType} from '../view/helpers.js';
+
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -48,11 +50,20 @@ export default class SingleCardPresenter {
     }
 
     resetView = () => {
-
-      if (this.#mode !== Mode.DEFAULT) {
+      if (this.#mode === Mode.FULL) {
+        this.#filmPopup.restore(this.#film);
         this.#destroyPopup();
       }
     }
+
+    restorePopup = (state) => {
+      this.#filmPopup.restore({...state, ...this.#film});
+      this.#openPopup();
+      this.#filmPopup.restoreScrollPosition();
+      document.addEventListener('keydown',this.#onEscKeyDown);
+
+    };
+
 
     //Навесит все обработчики
   #setAllHandlers = () => {
@@ -65,8 +76,10 @@ export default class SingleCardPresenter {
     this.#filmPopup.setWatchlistClickHandler(this.#handleWatchlistClick);
     this.#filmPopup.setWatchedlistClickHandler(this.#handleWatchedClick);
     this.#filmPopup.setFavoritelistClickHandler(this.#handleFavoriteClick);
-    //this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
+    this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
+    this.#filmPopup.setCommentDeleteHandler(this.#handleCommentDelete);
   };
+
 
 //Отрисует фильм, попап.
 #renderFilm = () => {
@@ -88,7 +101,7 @@ export default class SingleCardPresenter {
 
   if (this.#mode === Mode.FULL) {
     replace(this.#filmCard, prevFilmFilm);
-    replace(this.#filmPopup, prevFilmPopup);
+    this.#filmPopup.updateData({ ...this.#film, comments: this.#comments });
   }
 
   remove(prevFilmFilm);
@@ -117,10 +130,12 @@ export default class SingleCardPresenter {
    #onEscKeyDown = (evt) => {
      if (evt.key === 'Escape' || evt.key === 'Esc') {
        evt.preventDefault();
+       this.#filmPopup.restore(this.#film);
        this.#destroyPopup();
        document.removeEventListener('keydown',this.#onEscKeyDown);
      }
    };
+
 
    //Обработчик откр
   #handleFilmCardClick = () => {
@@ -131,49 +146,82 @@ export default class SingleCardPresenter {
 
   //Обработчик закр
   #handleCloseButtonClick = () => {
+    this.#filmPopup.restore(this.#film);
     this.#destroyPopup();
     document.removeEventListener('keydown',this.#onEscKeyDown);
   };
 
   //Вотчлист
   #handleWatchlistClick = () => {
-    this.#changeData({
-      ...this.#film,
-      inWatchlist: !this.#film.inWatchlist,
-    });
+    const currentFilter = document.querySelector('.main-navigation__item--active').textContent;
+    const inWatchlist = !this.#film.inWatchlist;
+    this.#changeData(
+      UserAction.WATCHLIST_ACTION,
+      UpdateType.MINOR,
+      {...this.#film,
+        inWatchlist,
+      },
+      (this.#mode === Mode.FULL) && this.#filmPopup.state);
+
+    if(this.#mode === Mode.FULL  && currentFilter.includes ('Watchlist') === true && inWatchlist === false) {
+      this.#destroyPopup();
+    }
   };
 
 
   //Просмотренное
   #handleWatchedClick = () => {
+    const currentFilter = document.querySelector('.main-navigation__item--active').textContent;
     const isWatched = !this.#film.isWatched;
-    this.#changeData({
-      ...this.#film,
-      isWatched,
-      watchingDate: isWatched ? new Date() : null,
-    });
+    this.#changeData(
+      UserAction.WATCHED_ACTION,
+      UpdateType.MINOR,
+      {...this.#film,
+        isWatched,
+        watchingDate: isWatched ? new Date() : null,
+      },
+      (this.#mode === Mode.FULL) && this.#filmPopup.state);
+
+    if(this.#mode === Mode.FULL  && currentFilter.includes ('History') === true && isWatched === false) {
+      this.#destroyPopup();
+    }
   };
 
 
   //Избранное
   #handleFavoriteClick = () => {
-    this.#changeData({
-      ...this.#film,
-      isFavourite: !this.#film.isFavourite,
-    });
+    const currentFilter = document.querySelector('.main-navigation__item--active').textContent;
+    const isFavorite = !this.#film.isFavorite;
+    this.#changeData(
+      UserAction.FAVORITE_ACTION,
+      UpdateType.MINOR,
+      {...this.#film,
+        isFavorite,
+      },(this.#mode === Mode.FULL) && this.#filmPopup.state);
+    if(this.#mode === Mode.FULL  && currentFilter.includes ('Favorite') === true && isFavorite === false) {
+      this.#destroyPopup();
+    }
   };
 
-/*
+
   //Добавление комментария
   #handleCommentAdd = (comment) => {
-    const newComment = { ...this.#comments, comment };
-
-    this.#film.comments.slice().push(newComment);
-
-    this.#changeData({
-      ...this.#film,
-      comments: [...this.#comments, newComment] });
+    const newComment = { ...this.#comments, ...comment };
+    this.#changeData(
+      UserAction.COMMENT_ADD,
+      UpdateType.MINOR,
+      newComment,
+      (this.#mode === Mode.FULL) && this.#filmPopup.state);
+    this.#filmPopup.restore(this.#film);
   };
-  */
+
+#handleCommentDelete = (comment) => {
+  this.#changeData(
+    UserAction.COMMENT_DELETE,
+    UpdateType.MINOR,
+    comment,
+    (this.#mode === Mode.FULL)  && this.#filmPopup.state,
+  );
+}
 }
 
