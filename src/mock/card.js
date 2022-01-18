@@ -71,7 +71,7 @@ const generateCountry = () => {
 };
 
 //если Already watched - вернёт дату, если нет - вернёт null
-const getWatchingDate = (isWatched) => (isWatched ===  true ? dayjs() : null);
+//const getWatchingDate = (isWatched) => (isWatched ===  true ? dayjs() : null);
 
 //Случайная дата для проверки сортировки
 const randomDate =(start, end) => new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
@@ -95,6 +95,7 @@ export const generateCard = () => ({
   comments: Array.from({length:getRandomInteger(1,5)},generateComment),
   inWatchlist: generateBooleanForList(),
   isWatched: generateBooleanForList(),
-  isFavourite: generateBooleanForList(),
-  watchingDate: getWatchingDate(),
+  isFavorite: generateBooleanForList(),
+  watchingDate: dayjs(randomDate(new Date(2021, 10, 9), new Date())),
 });
+

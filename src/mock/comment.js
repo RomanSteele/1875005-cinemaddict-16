@@ -1,5 +1,5 @@
 import { COMMENTS_NAMES, COMMENTS_TEXT} from './data.js';
-import { COMMENTS_EMOJIS } from '../view/helpers.js';
+import { COMMENT_EMOJIS } from '../utils/const.js';
 import dayjs from 'dayjs';
 
 //Случайное число из диапазона
@@ -12,9 +12,9 @@ const getRandomInteger = (a,b) => {
 
 //Создает значение эмодзи
 const generateCommentEmoji = () => {
-  const randomIndex = getRandomInteger(0, COMMENTS_EMOJIS.length - 1);
+  const randomIndex = getRandomInteger(0, COMMENT_EMOJIS.length - 1);
 
-  return COMMENTS_EMOJIS[randomIndex];
+  return COMMENT_EMOJIS[randomIndex];
 };
 
 //Создаёт имя комментатора
