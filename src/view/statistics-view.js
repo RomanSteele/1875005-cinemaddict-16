@@ -2,7 +2,7 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
-import { StatisticsType } from '../utils/helpers.js';
+import { StatisticsType } from '../utils/const.js';
 import { turnGenresToCountMap, getFilmsDuration, getTopGenre, convertTime} from '../utils/statistics-helpers.js';
 
 const BAR_HEIGHT = 50;

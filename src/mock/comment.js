@@ -1,5 +1,5 @@
 import { COMMENTS_NAMES, COMMENTS_TEXT} from './data.js';
-import { COMMENT_EMOJIS } from '../utils/helpers.js';
+import { COMMENT_EMOJIS } from '../utils/const.js';
 import dayjs from 'dayjs';
 
 //Случайное число из диапазона

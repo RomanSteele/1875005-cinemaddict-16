@@ -1,4 +1,4 @@
-import {FilterType, UserAction} from '../utils/helpers.js';
+import {FilterType, UserAction} from '../utils/const.js';
 
 
 export const filterTypeToFilms  = {

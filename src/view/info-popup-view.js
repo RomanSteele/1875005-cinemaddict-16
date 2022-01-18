@@ -1,4 +1,5 @@
-import {shiftDurationToHours, COMMENT_EMOJIS} from '../utils/helpers.js';
+import {COMMENT_EMOJIS} from '../utils/const.js';
+import {shiftDurationToHours} from '../utils/helpers.js';
 import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 import he from 'he';

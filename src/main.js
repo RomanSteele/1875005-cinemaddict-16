@@ -2,7 +2,7 @@ import {RenderPosition, render, remove} from './utils/render.js';
 import {generateCard} from './mock/card.js';
 import FilmsView from './view/films-view.js';
 import createProfileRatingTemplate from './view/profile-rating-view.js';
-import {StatisticsItem, watchedFilmsCountToUserRank} from './utils/helpers.js';
+import {StatisticsItem, watchedFilmsCountToUserRank} from './utils/const.js';
 
 import FilterPresenter from './presenter/filter-presenter.js';
 import FilmsPresenter from './presenter/film-cards-presenter.js';

@@ -1,7 +1,7 @@
 import FiltersView from '../view/filters-view.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import {filterTypeToFilms} from '../utils/filters.js';
-import {FilterType, UpdateType} from '../utils/helpers.js';
+import {FilterType, UpdateType} from '../utils/const.js';
 
 export default class FilterPresenter {
   #filterContainer = null;

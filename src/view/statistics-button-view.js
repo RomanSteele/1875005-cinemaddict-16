@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import {StatisticsItem} from '../utils/helpers.js';
+import {StatisticsItem} from '../utils/const.js';
 
 const createStatisticsButtonTemplate = () => `<nav class="main-navigation">
   <a href="${StatisticsItem.STATISTICS}" class="main-navigation__additional" data-statistics-item="${StatisticsItem.STATISTICS}">Stats</a>
