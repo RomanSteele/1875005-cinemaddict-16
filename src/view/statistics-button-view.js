@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import {StatisticsItem} from './helpers.js';
+import {StatisticsItem} from '../utils/helpers.js';
 
 const createStatisticsButtonTemplate = () => `<nav class="main-navigation">
   <a href="${StatisticsItem.STATISTICS}" class="main-navigation__additional" data-statistics-item="${StatisticsItem.STATISTICS}">Stats</a>
@@ -11,12 +11,12 @@ export default class StatisticsButtonView extends AbstractView {
   }
 
   setStatisticsButtonClickHandler = (callback) => {
-    this._callback.statisticsButtonClick = callback;
+    this._callback.clickStatisticsButton = callback;
 
-    this.element.addEventListener('click', this.#statisticsButtonClickHandler);
+    this.element.addEventListener('click', this.#onStatisticsButtonClick);
   };
 
-  #statisticsButtonClickHandler = (evt) => {
+  #onStatisticsButtonClick = (evt) => {
     evt.preventDefault();
 
     if (evt.target.tagName !== 'A') {
@@ -29,6 +29,6 @@ export default class StatisticsButtonView extends AbstractView {
       evt.target.classList.add('main-navigation__additional--active');
     }
 
-    this._callback.statisticsButtonClick(evt.target.dataset.statisticsItem);
+    this._callback.clickStatisticsButton(evt.target.dataset.statisticsItem);
   };
 }

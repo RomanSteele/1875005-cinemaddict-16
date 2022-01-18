@@ -1,8 +1,8 @@
-import {RenderPosition, render, remove} from './render.js';
+import {RenderPosition, render, remove} from './utils/render.js';
 import {generateCard} from './mock/card.js';
 import FilmsView from './view/films-view.js';
-import ProfileRatingView from './view/profile-rating-view.js';
-import {StatisticsItem} from './view/helpers.js';
+import createProfileRatingTemplate from './view/profile-rating-view.js';
+import {StatisticsItem, watchedFilmsCountToUserRank} from './utils/helpers.js';
 
 import FilterPresenter from './presenter/filter-presenter.js';
 import FilmsPresenter from './presenter/film-cards-presenter.js';
@@ -13,15 +13,17 @@ import CommentsModel from './model/comments-model.js';
 
 import StatisticsButtonView from './view/statistics-button-view.js';
 import StatisticsView from './view/statistics-view.js';
+import FilmsQuantityView from './view/films-quantity-view.js';
 
 const siteMain = document.querySelector('.main');
+const siteFooter = document.querySelector('.footer');
 
 const films = Array.from({ length: 24 }, generateCard);
 
 
 const comments = films.reduce((commentsList, film) => {
-  const comment = film.comments;
-  return [...commentsList, ...comment];
+  const filmComments = film.comments;
+  return [...commentsList, ...filmComments];
 }, []);
 
 
@@ -35,9 +37,11 @@ commentsModel.comments = comments;
 const allFilmsView = new FilmsView();
 render(siteMain, allFilmsView.element, RenderPosition.BEFORE_END);
 
+const userRank = watchedFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
+
 const statisticsButtonComponent = new StatisticsButtonView();
 const siteHeader = document.querySelector('.header');
-render(siteHeader, new ProfileRatingView().element, RenderPosition.BEFORE_END);
+render(siteHeader, new createProfileRatingTemplate(userRank), RenderPosition.BEFORE_END);
 
 const filterPresenter = new FilterPresenter(statisticsButtonComponent, filterModel, filmsModel);
 const filmsPresenter = new FilmsPresenter(allFilmsView, filmsModel, filterModel, commentsModel);
@@ -53,7 +57,7 @@ const handleStatsClick = (statisticsItem) => {
   switch (statisticsItem) {
     case StatisticsItem.STATISTICS:
 
-      statisticsComponent = new StatisticsView(filmsModel.films);
+      statisticsComponent = new StatisticsView(filmsModel.films,userRank);
       filmsPresenter.erase();
       filterPresenter.removeActiveClass();
       render(siteMain, statisticsComponent, RenderPosition.BEFORE_END);
@@ -67,6 +71,7 @@ const handleStatsClick = (statisticsItem) => {
 
 statisticsButtonComponent.setStatisticsButtonClickHandler(handleStatsClick);
 render(siteMain, statisticsButtonComponent, RenderPosition.AFTER_BEGIN);
+render(siteFooter, new FilmsQuantityView(films.length), RenderPosition.BEFORE_END);
 filterPresenter.init();
 filmsPresenter.init();
 

@@ -1,8 +1,9 @@
 import FilmCardView from '../view/film-card-view.js';
 import InfoPopupView from '../view/info-popup-view.js';
-import { RenderPosition, render, remove, replace } from '../render.js';
-import {UserAction, UpdateType} from '../view/helpers.js';
+import {RenderPosition, render, remove, replace} from '../utils/render.js';
+import {UserAction, UpdateType} from '../utils/helpers.js';
 
+import { generateComment } from '../mock/comment.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -15,7 +16,7 @@ export default class SingleCardPresenter {
 
   #container = null;
   #changeData = null;
-  #changeMode = null;
+  //#changeMode = null;
 
   #filmCard = null;
   #filmPopup = null;
@@ -25,10 +26,10 @@ export default class SingleCardPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor(container, changeData, changeMode) {
+  constructor(container, changeData, /*changeMode*/) {
     this.#container = container;
     this.#changeData = changeData;
-    this.#changeMode = changeMode;
+    //this.#changeMode = changeMode;
   }
 
 
@@ -60,8 +61,6 @@ export default class SingleCardPresenter {
       this.#filmPopup.restore({...state, ...this.#film});
       this.#openPopup();
       this.#filmPopup.restoreScrollPosition();
-      document.addEventListener('keydown',this.#onEscKeyDown);
-
     };
 
 
@@ -84,27 +83,27 @@ export default class SingleCardPresenter {
 //Отрисует фильм, попап.
 #renderFilm = () => {
 
-  const prevFilmFilm = this.#filmCard;
+  const prevFilmCard = this.#filmCard;
   const prevFilmPopup = this.#filmPopup;
 
   this.#filmCard = new FilmCardView(this.#film);
   this.#filmPopup = new InfoPopupView(this.#film, this.#comments);
 
-  if (prevFilmFilm === null ) {
+  if (prevFilmCard === null ) {
     render(this.#container, this.#filmCard, RenderPosition.BEFORE_END);
     return;
   }
 
   if (this.#mode === Mode.DEFAULT) {
-    replace(this.#filmCard, prevFilmFilm);
+    replace(this.#filmCard, prevFilmCard);
   }
 
   if (this.#mode === Mode.FULL) {
-    replace(this.#filmCard, prevFilmFilm);
+    replace(this.#filmCard, prevFilmCard);
     this.#filmPopup.updateData({ ...this.#film, comments: this.#comments });
   }
 
-  remove(prevFilmFilm);
+  remove(prevFilmCard);
   remove(prevFilmPopup);
 }
 
@@ -112,6 +111,7 @@ export default class SingleCardPresenter {
 //Убирает попап
   #destroyPopup = () => {
     this.#filmPopup.element.remove();
+    document.removeEventListener('keydown', this.#onEscKeyDown);
     document.body.classList.remove('hide-overflow');
     this.#mode = Mode.DEFAULT;
   }
@@ -119,7 +119,8 @@ export default class SingleCardPresenter {
 
   //Отрисовывает попап
   #openPopup = () => {
-    this.#changeMode();
+    //this.#changeMode();
+    document.addEventListener('keydown', this.#onEscKeyDown);
     document.body.classList.add('hide-overflow');
     render(document.body, this.#filmPopup, RenderPosition.BEFORE_END);
     this.#mode = Mode.FULL;
@@ -132,7 +133,6 @@ export default class SingleCardPresenter {
        evt.preventDefault();
        this.#filmPopup.restore(this.#film);
        this.#destroyPopup();
-       document.removeEventListener('keydown',this.#onEscKeyDown);
      }
    };
 
@@ -140,7 +140,6 @@ export default class SingleCardPresenter {
    //Обработчик откр
   #handleFilmCardClick = () => {
     this.#openPopup();
-    document.addEventListener('keydown',this.#onEscKeyDown);
   };
 
 
@@ -148,80 +147,71 @@ export default class SingleCardPresenter {
   #handleCloseButtonClick = () => {
     this.#filmPopup.restore(this.#film);
     this.#destroyPopup();
-    document.removeEventListener('keydown',this.#onEscKeyDown);
   };
+
 
   //Вотчлист
   #handleWatchlistClick = () => {
-    const currentFilter = document.querySelector('.main-navigation__item--active').textContent;
     const inWatchlist = !this.#film.inWatchlist;
     this.#changeData(
-      UserAction.WATCHLIST_ACTION,
-      UpdateType.MINOR,
+      UserAction.WATCHLIST_ADD,
+      UpdateType.PATCH,
       {...this.#film,
         inWatchlist,
       },
       (this.#mode === Mode.FULL) && this.#filmPopup.state);
-
-    if(this.#mode === Mode.FULL  && currentFilter.includes ('Watchlist') === true && inWatchlist === false) {
-      this.#destroyPopup();
-    }
+    if(this.#mode === Mode.FULL) {this.restorePopup();}
   };
 
 
   //Просмотренное
   #handleWatchedClick = () => {
-    const currentFilter = document.querySelector('.main-navigation__item--active').textContent;
     const isWatched = !this.#film.isWatched;
     this.#changeData(
-      UserAction.WATCHED_ACTION,
-      UpdateType.MINOR,
+      UserAction.WATCHED_ADD,
+      UpdateType.PATCH,
       {...this.#film,
         isWatched,
         watchingDate: isWatched ? new Date() : null,
       },
       (this.#mode === Mode.FULL) && this.#filmPopup.state);
-
-    if(this.#mode === Mode.FULL  && currentFilter.includes ('History') === true && isWatched === false) {
-      this.#destroyPopup();
-    }
+    if(this.#mode === Mode.FULL) {this.restorePopup();}
   };
 
 
   //Избранное
   #handleFavoriteClick = () => {
-    const currentFilter = document.querySelector('.main-navigation__item--active').textContent;
     const isFavorite = !this.#film.isFavorite;
     this.#changeData(
-      UserAction.FAVORITE_ACTION,
-      UpdateType.MINOR,
+      UserAction.FAVORITE_ADD,
+      UpdateType.PATCH,
       {...this.#film,
         isFavorite,
       },(this.#mode === Mode.FULL) && this.#filmPopup.state);
-    if(this.#mode === Mode.FULL  && currentFilter.includes ('Favorite') === true && isFavorite === false) {
-      this.#destroyPopup();
-    }
+    if(this.#mode === Mode.FULL) {this.restorePopup();}
   };
 
 
-  //Добавление комментария
   #handleCommentAdd = (comment) => {
-    const newComment = { ...this.#comments, ...comment };
+    const newComment = { ...generateComment(Math.random()), ...comment};
     this.#changeData(
       UserAction.COMMENT_ADD,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       newComment,
       (this.#mode === Mode.FULL) && this.#filmPopup.state);
     this.#filmPopup.restore(this.#film);
+    document.removeEventListener('keydown',this.#onEscKeyDown);
   };
+
 
 #handleCommentDelete = (comment) => {
   this.#changeData(
     UserAction.COMMENT_DELETE,
-    UpdateType.MINOR,
+    UpdateType.PATCH,
     comment,
     (this.#mode === Mode.FULL)  && this.#filmPopup.state,
   );
+  document.removeEventListener('keydown',this.#onEscKeyDown);
 }
 }
 

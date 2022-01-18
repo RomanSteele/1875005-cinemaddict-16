@@ -2,11 +2,14 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dayjs from 'dayjs';
 import SmartView from './smart-view.js';
-import { StatisticsType } from '../view/helpers.js';
-import { genresToCountMap, getFilmsDuration, getTopGenre,  timeConvert} from '../statistics-helpers.js';
+import { StatisticsType } from '../utils/helpers.js';
+import { turnGenresToCountMap, getFilmsDuration, getTopGenre, convertTime} from '../utils/statistics-helpers.js';
+
+const BAR_HEIGHT = 50;
+const currentDate = dayjs();
 
 const renderFilters = (filters, currentFilter) => filters.map((filter) => {
-  const filterLabel = (filter[0].toUpperCase() + filter.slice(1)).split('-').join(' ');
+  const filterLabel = filter[0] !== '' ? (filter[0].toUpperCase() + filter.slice(1)).split('-').join(' ') : 'No filter available';
   const isChecked = filter === currentFilter;
 
   return `<input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-${filter}" value="${filter}" ${isChecked ? 'checked' : ''}>
@@ -14,9 +17,8 @@ const renderFilters = (filters, currentFilter) => filters.map((filter) => {
 }).join('');
 
 const renderChart = (statisticCtx, genres) => {
-  const BAR_HEIGHT = 50;
   const genresNames = genres.map(({ genre }) => genre);
-  const genresCount = genres.map(({ count }) => count);
+  const genresNumbers = genres.map(({ count }) => count);
 
 
   statisticCtx.height = BAR_HEIGHT * genres.length;
@@ -27,7 +29,7 @@ const renderChart = (statisticCtx, genres) => {
     data: {
       labels: genresNames,
       datasets: [{
-        data: genresCount,
+        data: genresNumbers,
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
@@ -79,14 +81,14 @@ const renderChart = (statisticCtx, genres) => {
     },
   });
 };
-const createStatisticsTemplate = ( data, currentFilter) => {
+const createStatisticsTemplate = (data, currentFilter, userRank) => {
   const { watchedFilmsCount, watchedFilmsDurationHours, watchedFilmsDurationMinutes, watchedFilmsTopGenre } = data;
 
   return `<section class="statistic">
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">Movie buff</span>
+      <span class="statistic__rank-label">${userRank}</span>
     </p>
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>
@@ -116,12 +118,12 @@ export default class StatisticsView extends SmartView {
   #films = null;
   #chart = null;
   #currentFilter = StatisticsType.ALL_TIME;
+  #userRank = null;
 
-
-  constructor(films) {
+  constructor(films, userRank) {
     super();
     this.#films = films.filter((film) => film.isWatched);
-
+    this.#userRank = userRank;
 
     this._data = this.#parseWatchedFilmsToData(this.#films);
 
@@ -132,21 +134,32 @@ export default class StatisticsView extends SmartView {
   get films() {
     switch (this.#currentFilter) {
       case StatisticsType.TODAY:
-        return this.#films.filter((film) => dayjs().diff(dayjs(film.watchingDate), 'day') === 0);
+        return this.#films.filter((film) => currentDate.diff(dayjs(film.watchingDate), 'day') === 0);
       case StatisticsType.WEEK:
-        return this.#films.filter((film) => dayjs().diff(dayjs(film.watchingDate), 'week') === 0);
+        return this.#films.filter((film) => currentDate.diff(dayjs(film.watchingDate), 'week') === 0);
       case StatisticsType.MONTH:
-        return this.#films.filter((film) => dayjs().diff(dayjs(film.watchingDate), 'month') === 0);
+        return this.#films.filter((film) => currentDate.diff(dayjs(film.watchingDate), 'month') === 0);
       case StatisticsType.YEAR:
-        return this.#films.filter((film) => dayjs().diff(dayjs(film.watchingDate), 'year') === 0);
+        return this.#films.filter((film) => currentDate.diff(dayjs(film.watchingDate), 'year') === 0);
       default:
         return this.#films;
     }
   }
 
   get template() {
-    return createStatisticsTemplate(this._data, this.#currentFilter);
+    return createStatisticsTemplate(this._data, this.#currentFilter, this.#userRank);
   }
+
+
+  #setFilterTypeChangeHandler = () => {
+    this.element.querySelector('.statistic__filters').addEventListener('change', this.#onFilterChange);
+  };
+
+  #setChart = () => {
+    const statisticCtx = this.element.querySelector('.statistic__chart');
+    this.#chart = renderChart(statisticCtx, turnGenresToCountMap(this.films));
+  };
+
 
   restoreHandlers = () => {
     this.#setFilterTypeChangeHandler();
@@ -155,8 +168,8 @@ export default class StatisticsView extends SmartView {
 
   #parseWatchedFilmsToData = (watchedFilms) => {
     const watchedFilmsCount = watchedFilms.length;
-    const watchedFilmsDurationHours = watchedFilmsCount ? timeConvert(getFilmsDuration(watchedFilms)).rhours : [0];
-    const watchedFilmsDurationMinutes = watchedFilmsCount ? timeConvert(getFilmsDuration(watchedFilms)).rminutes : [0];
+    const watchedFilmsDurationHours = watchedFilmsCount ? convertTime(getFilmsDuration(watchedFilms)).roundedHours : '0';
+    const watchedFilmsDurationMinutes = watchedFilmsCount ? convertTime(getFilmsDuration(watchedFilms)).roundedMinutes : '0';
     const watchedFilmsTopGenre = watchedFilmsCount ? getTopGenre(watchedFilms)  : '';
 
     return {
@@ -167,19 +180,12 @@ export default class StatisticsView extends SmartView {
     };
   };
 
-  #setFilterTypeChangeHandler = () => {
-    this.element.querySelector('.statistic__filters').addEventListener('change', this.#filterTypeChangeHandler);
-  };
 
-  #filterTypeChangeHandler = (evt) => {
+  #onFilterChange = (evt) => {
     this.#currentFilter = evt.target.value;
     this.updateData(this.#parseWatchedFilmsToData(this.films));
 
     this.#setChart();
   };
 
-  #setChart = () => {
-    const statisticCtx = this.element.querySelector('.statistic__chart');
-    this.#chart = renderChart(statisticCtx, genresToCountMap(this.films));
-  };
 }

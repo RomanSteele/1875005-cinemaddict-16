@@ -1,4 +1,4 @@
-import {shiftDurationToHours} from './helpers.js';
+import {shiftDurationToHours} from '../utils/helpers.js';
 import AbstractView from './abstract-view.js';
 
 
@@ -29,6 +29,8 @@ const createFilmCardTemplate = (film) => {
     isFavorite,
   } = film;
 
+  const formatDescription = (description.length > 140) ? `${description.slice(0, 139)}...` : description;
+
   return`<article class="film-card">
           <a class="film-card__link">
             <h3 class="film-card__title">${title}</h3>
@@ -39,7 +41,7 @@ const createFilmCardTemplate = (film) => {
               <span class="film-card__genre">${genres[0]}</span>
             </p>
             <img src="./${imgSource}" alt="${alternativeTitle}" class="film-card__poster">
-            <p class="film-card__description">${description}</p>
+            <p class="film-card__description">${formatDescription}</p>
             <span class="film-card__comments">${comments.length} comments</span>
           </a>
           <div class="film-card__controls">

@@ -27,7 +27,7 @@ updateFilm = (updateType, update) => {
   this._notify(updateType, update);
 }
 
-  addFilmToList = (updateType, update) => {
+  addFilm = (updateType, update) => {
     this.#films = [
       update,
       ...this.#films,
@@ -36,7 +36,7 @@ updateFilm = (updateType, update) => {
     this._notify(updateType, update);
   }
 
-  deleteFilmFromList = (updateType, update) => {
+  deleteFilm = (updateType, update) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {

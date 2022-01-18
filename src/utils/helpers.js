@@ -12,7 +12,7 @@ export const SortType = {
   RATING: 'rating',
 };
 
-export const COMMENTS_EMOJIS = [
+export const COMMENT_EMOJIS = [
   'smile',
   'sleeping',
   'puke',
@@ -20,9 +20,9 @@ export const COMMENTS_EMOJIS = [
 ];
 
 export const UserAction = {
-  WATCHLIST_ACTION: 'WATCHLIST_ACTION',
-  WATCHED_ACTION: 'WATCHED_ACTION',
-  FAVORITE_ACTION: 'FAVORITE_ACTION',
+  WATCHLIST_ADD: 'WATCHLIST_ACTION',
+  WATCHED_ADD: 'WATCHED_ACTION',
+  FAVORITE_ADD: 'FAVORITE_ACTION',
   COMMENT_ADD:'COMMENT_ADD',
   COMMENT_DELETE:'COMMENT_DELETE',
 };
@@ -33,12 +33,6 @@ export const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-export const FilterType = {
-  ALL: 'all',
-  WATCHLIST: 'watchlist',
-  HISTORY: 'history',
-  FAVORITE: 'favorites',
-};
 
 export const StatisticsItem = {
   STATISTICS: 'stats'
@@ -50,4 +44,27 @@ export const StatisticsType = {
   WEEK: 'week',
   MONTH: 'month',
   YEAR: 'year'
+};
+
+export const watchedFilmsCountToUserRank = (count) => {
+  let userRank = null;
+
+  if (count >= 21) {
+    userRank = 'Movie Buff';
+  } else if (count >= 11 && count <= 20) {
+    userRank = 'Fan';
+  } else if (count >= 1 && count <= 10) {
+    userRank = 'Novice';
+  } else {
+    userRank = '';
+  }
+
+  return userRank;
+};
+
+export const FilterType = {
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  FAVORITE: 'favorites',
 };

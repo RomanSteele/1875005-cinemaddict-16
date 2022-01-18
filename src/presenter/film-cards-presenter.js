@@ -4,13 +4,12 @@ import FilmsContainerView from '../view/films-container-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 
-import { RenderPosition, render, remove} from '../render.js';
-import { SortType, FilterType } from '../view/helpers.js';
+import {RenderPosition, render, remove} from '../utils/render.js';
 import { sortFilmsByDate, sortFilmsByRating} from '../utils.js';
 
 import SingleCardPresenter from './film-presenter.js';
-import {filters} from '../filters.js';
-import {UserAction, UpdateType} from '../view/helpers.js';
+import {filterTypeToFilms, actionTypeToFilterType } from '../utils/filters.js';
+import {SortType, UserAction, UpdateType} from '../utils/helpers.js';
 
 const CARDS_PER_STEP = 5;
 
@@ -30,7 +29,6 @@ export default class FilmsPresenter {
 
   #renderedFilmCount = CARDS_PER_STEP;
   #currentSortType = SortType.DEFAULT;
-  #filterType = FilterType.ALL;
   #openedPopupData = {};
   #isErased = false;
 
@@ -45,9 +43,8 @@ export default class FilmsPresenter {
 
 
   get films() {
-    this.#filterType = this.#filterModel.filter;
     const films = this.#filmsModel.films;
-    const filteredFilms = filters[this.#filterType](films);
+    const filteredFilms = filterTypeToFilms [this.#filterModel.filter](films);
 
     switch (this.#currentSortType) {
       case SortType.DATE:
@@ -64,9 +61,9 @@ export default class FilmsPresenter {
     this.#filmsSectionComponent = new FilmsSectionView();
     this.#filmContainerComponent = new FilmsContainerView();
 
-    render(this.#container, this.#filmsSectionComponent, RenderPosition.BEFORE_END);
-    render(this.#filmsSectionComponent, this.#filmContainerComponent, RenderPosition.BEFORE_END);
     this.#renderBoard();
+    render(this.#filmsSectionComponent, this.#filmContainerComponent, RenderPosition.AFTER_BEGIN);
+    render(this.#container, this.#filmsSectionComponent, RenderPosition.BEFORE_END);
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -114,10 +111,10 @@ export default class FilmsPresenter {
     const presenter = new SingleCardPresenter(
       this.#filmContainerComponent,
       this.#handleViewAction,
-      this.#handleModeChange,
+      //this.#handleModeChange,
     );
 
-    const comments = [...this.#commentsModel.comments.filter((comment) => film.comments.includes(comment.id))];
+    const comments = [this.#commentsModel.comments.filter((comment) => film.comments.includes(comment.id))];
     presenter.init(film, comments);
     if (this.#openedPopupData && this.#openedPopupData.id === film.id) {
       presenter.restorePopup(this.#openedPopupData);
@@ -132,33 +129,47 @@ export default class FilmsPresenter {
 
 
   #renderEmptyList = () => {
-    this.#emptyListComponent = new EmptyListView(this.#filterType);
+    this.#emptyListComponent = new EmptyListView(this.#filterModel.filter);
     render(this.#filmsSectionComponent, this.#emptyListComponent, RenderPosition.BEFORE_END);
   }
 
-
+  /*
   // changeMode
   #handleModeChange = () => {
     this.#openedPopupData = {};
     this.#filmsPresenter.forEach((presenter) => presenter.resetView());
   }
-
+*/
 
   #handleViewAction = (actionType, updateType, update, openedPopupData) => {
     this.#openedPopupData = openedPopupData;
     switch (actionType) {
-      case UserAction.WATCHLIST_ACTION:
+
+      case UserAction.WATCHLIST_ADD:
+        if(this.#filterModel.filter === actionTypeToFilterType[actionType]) {
+          updateType = UpdateType.MINOR;
+        }
         this.#filmsModel.updateFilm(updateType, update);
         break;
-      case UserAction.WATCHED_ACTION:
+
+      case UserAction.WATCHED_ADD:
+        if(this.#filterModel.filter === actionTypeToFilterType[actionType]) {
+          updateType = UpdateType.MINOR;
+        }
         this.#filmsModel.updateFilm(updateType, update);
         break;
-      case UserAction.FAVORITE_ACTION:
+
+      case UserAction.FAVORITE_ADD:
+        if(this.#filterModel.filter === actionTypeToFilterType[actionType]) {
+          updateType = UpdateType.MINOR;
+        }
         this.#filmsModel.updateFilm(updateType, update);
         break;
+
       case UserAction.COMMENT_ADD:
         this.#commentsModel.addComment(actionType,  update);
         break;
+
       case UserAction.COMMENT_DELETE:
         this.#commentsModel.deleteComment(actionType, update);
         break;
@@ -178,7 +189,7 @@ export default class FilmsPresenter {
         break;
 
       case UpdateType.MAJOR:
-        if (this.#isErased === true) {
+        if (this.#isErased) {
           this.init();
           return;
         }
@@ -193,7 +204,7 @@ export default class FilmsPresenter {
 
   #handleCommentModelEvent = (actionType, update) => {
     const currentFilm = this.#filmsModel.films.find((film) => film.id  === this.#openedPopupData.id);
-    let index = null;
+    let indexes = null;
     let comments  = null;
 
     switch (actionType) {
@@ -205,8 +216,8 @@ export default class FilmsPresenter {
         break;
 
       case UserAction.COMMENT_DELETE:
-        index = [...currentFilm.comments].findIndex((comment) => comment.id === update);
-        comments  = [...currentFilm.comments.slice(0, index), ...currentFilm.comments.slice(index + 1)];
+        indexes = [...currentFilm.comments].findIndex((comment) => comment.id === update);
+        comments  = [...currentFilm.comments.slice(0, indexes), ...currentFilm.comments.slice(indexes + 1)];
         this.#filmsModel.updateFilm(UpdateType.MINOR, { ...currentFilm, comments });
         break;
 
@@ -218,7 +229,7 @@ export default class FilmsPresenter {
   #renderShowMoreButton = () => {
     this.#showMoreButtonComponent = new ShowMoreButtonView();
     if(this.films.length > CARDS_PER_STEP){
-      this.#showMoreButtonComponent.setClickHandler(this.#onShowMoreButtonClickHandler);
+      this.#showMoreButtonComponent.setClickHandler(this.#handleShowMoreButtonComponentAction);
 
       render(this.#filmsSectionComponent, this.#showMoreButtonComponent, RenderPosition.BEFORE_END);
     }
@@ -226,7 +237,7 @@ export default class FilmsPresenter {
 
 
   //Обработчик кнопки show more
-  #onShowMoreButtonClickHandler = () => {
+  #handleShowMoreButtonComponentAction = () => {
     const filmCount = this.films.length;
     const newRenderedFilmCount = Math.min(filmCount, this.#renderedFilmCount + CARDS_PER_STEP);
     const films = this.films.slice(this.#renderedFilmCount, newRenderedFilmCount);
@@ -249,11 +260,7 @@ export default class FilmsPresenter {
     remove(this.#emptyListComponent);
     remove(this.#showMoreButtonComponent);
 
-    if (resetRenderedFilmCount) {
-      this.#renderedFilmCount = CARDS_PER_STEP;
-    } else {
-      this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
-    }
+    this.#renderedFilmCount = resetRenderedFilmCount ? this.#renderedFilmCount = CARDS_PER_STEP : this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;

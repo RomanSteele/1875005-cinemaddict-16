@@ -25,7 +25,7 @@ const createFilterTemplate = (filterItems, currentFilterType) => {
 
 export default class FiltersView extends AbstractView{
   #filters = null;
-  #currentFilter = null;
+  #currentFilter = '';
 
 
   constructor(filters, currentFilterType) {
@@ -38,18 +38,19 @@ export default class FiltersView extends AbstractView{
     return createFilterTemplate(this.#filters,this.#currentFilter);
   }
 
+  setFilterTypeChangeHandler = (callback) => {
+
+    this._callback.filterTypeChange = callback;
+    this.element.addEventListener('click', this.#onFilterClick);
+  }
+
   removeActiveClass = () => {
 
     this.element.querySelector('.main-navigation__item--active').classList.remove('main-navigation__item--active');
   }
 
-  setFilterTypeChangeHandler = (callback) => {
 
-    this._callback.filterTypeChange = callback;
-    this.element.addEventListener('click', this.#filterTypeChangeHandler);
-  }
-
-  #filterTypeChangeHandler = (evt) => {
+  #onFilterClick = (evt) => {
     evt.preventDefault();
     if (!evt.target.classList.contains('main-navigation__item')) {
       return;

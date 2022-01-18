@@ -1,7 +1,7 @@
 import FiltersView from '../view/filters-view.js';
-import {render, RenderPosition, replace, remove} from '../render.js';
-import {filters} from '../filters.js';
-import {FilterType, UpdateType} from '../view/helpers.js';
+import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {filterTypeToFilms} from '../utils/filters.js';
+import {FilterType, UpdateType} from '../utils/helpers.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -27,25 +27,25 @@ export default class FilterPresenter {
         type: FilterType.ALL,
         name: 'all',
         title: 'All movies',
-        count: filters[FilterType.ALL](films).length,
+        count: filterTypeToFilms [FilterType.ALL](films).length,
       },
       {
         type: FilterType.WATCHLIST,
         name: 'watchlist',
         title: 'Watchlist',
-        count: filters[FilterType.WATCHLIST](films).length,
+        count: filterTypeToFilms [FilterType.WATCHLIST](films).length,
       },
       {
         type: FilterType.HISTORY,
         name: 'history',
         title: 'History',
-        count: filters[FilterType.HISTORY](films).length,
+        count: filterTypeToFilms [FilterType.HISTORY](films).length,
       },
       {
         type: FilterType.FAVORITE,
         name: 'favorites',
         title: 'Favorites',
-        count: filters[FilterType.FAVORITE](films).length,
+        count: filterTypeToFilms [FilterType.FAVORITE](films).length,
       },
     ];
   }
@@ -76,7 +76,7 @@ export default class FilterPresenter {
   #handleFilterTypeChange = (filterType) => {
     const isStatisticsOpened = document.querySelector('.main-navigation__additional--active');
 
-    if (document.contains(isStatisticsOpened) === false && this.#filterModel.filter === filterType) {
+    if (!document.contains(isStatisticsOpened) && this.#filterModel.filter === filterType) {
       return;
     }
 

@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import {SortType} from './helpers.js';
+import {SortType} from '../utils/helpers.js';
 
 const createSortButtonsTemplate = (currentSortType) => (
   `<ul class="sort">
