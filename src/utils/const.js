@@ -38,20 +38,29 @@ export const StatisticsType = {
   YEAR: 'year'
 };
 
-export const watchedFilmsCountToUserRank = (count) => {
-  let userRank = null;
+export const Rank = {
+  NOVICE: 'Novice',
+  FAN: 'Fan',
+  MOVIE_BUFF: 'Movie Buff',
+};
 
-  if (count >= 21) {
-    userRank = 'Movie Buff';
-  } else if (count >= 11 && count <= 20) {
-    userRank = 'Fan';
-  } else if (count >= 1 && count <= 10) {
-    userRank = 'Novice';
-  } else {
-    userRank = '';
+export const RankTypes = {
+  NOVICE: {
+    min: 1,
+    max: 10,
+  },
+  FAN: {
+    min: 11,
+    max: 20,
+  },
+  MOVIE_BUFF: {
+    min: 21,
   }
+};
 
-  return userRank;
+export const DesctiptionLettersQuantity = {
+  short: 139,
+  long: 140,
 };
 
 export const FilterType = {

@@ -4,6 +4,7 @@ import FilmsContainerView from '../view/films-container-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 
+
 import {RenderPosition, render, remove} from '../utils/render.js';
 import { sortFilmsByDate, sortFilmsByRating} from '../utils.js';
 
@@ -31,6 +32,7 @@ export default class FilmsPresenter {
   #commentsModel = null;
 
   #popupPresenter = null;
+
 
   #renderedFilmCount = CARDS_PER_STEP;
   #currentSortType = SortType.DEFAULT;
@@ -153,7 +155,7 @@ export default class FilmsPresenter {
       const filmId = this.#popupPresenter.film.id;
       const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
 
-      const comments = [this.#commentsModel.comments.filter((comment) => film.comments.includes(comment.id))];
+      const comments = this.#commentsModel.comments.filter((comment) => film.comments.includes(comment.id));
       this.#popupPresenter.init(film, comments);
     }
   };
@@ -263,7 +265,7 @@ export default class FilmsPresenter {
     const newRenderedFilmCount = Math.min(filmCount, this.#renderedFilmCount + CARDS_PER_STEP);
     const films = this.films.slice(this.#renderedFilmCount, newRenderedFilmCount);
 
-    films.forEach((film) => this.#renderCard(film, film.comments));
+    films.forEach((film) => this.#renderCard(film));
     this.#renderedFilmCount = newRenderedFilmCount;
 
     if (this.#renderedFilmCount >= filmCount) {
@@ -281,7 +283,7 @@ export default class FilmsPresenter {
     remove(this.#emptyListComponent);
     remove(this.#showMoreButtonComponent);
 
-    this.#renderedFilmCount = resetRenderedFilmCount ? this.#renderedFilmCount = CARDS_PER_STEP : this.#renderedFilmCount = Math.min(filmCount, this.#renderedFilmCount);
+    this.#renderedFilmCount = resetRenderedFilmCount ?  CARDS_PER_STEP : Math.min(filmCount, this.#renderedFilmCount);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
@@ -297,7 +299,6 @@ export default class FilmsPresenter {
       return;
     }
     this.#renderSort();
-
     this.#renderCards(films.slice(0, Math.min(filmsCount, this.#renderedFilmCount)));
 
     if (filmsCount > this.#renderedFilmCount) {
@@ -305,5 +306,6 @@ export default class FilmsPresenter {
     }
 
   }
+
 }
 

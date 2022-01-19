@@ -1,5 +1,6 @@
 import {shiftDurationToHours} from '../utils/helpers.js';
 import AbstractView from './abstract-view.js';
+import {DesctiptionLettersQuantity} from '../utils/const.js';
 
 
 const createControlButtonTemplate = (name, title, isActive) => {
@@ -29,7 +30,8 @@ const createFilmCardTemplate = (film) => {
     isFavorite,
   } = film;
 
-  const formatDescription = (description.length > 140) ? `${description.slice(0, 139)}...` : description;
+
+  const descriptionFormat = (description.length > DesctiptionLettersQuantity.long) ? `${description.slice(0, DesctiptionLettersQuantity.short)}...` : description;
 
   return`<article class="film-card">
           <a class="film-card__link">
@@ -41,7 +43,7 @@ const createFilmCardTemplate = (film) => {
               <span class="film-card__genre">${genres[0]}</span>
             </p>
             <img src="./${imgSource}" alt="${alternativeTitle}" class="film-card__poster">
-            <p class="film-card__description">${formatDescription}</p>
+            <p class="film-card__description">${descriptionFormat}</p>
             <span class="film-card__comments">${comments.length} comments</span>
           </a>
           <div class="film-card__controls">

@@ -18,8 +18,6 @@ export default class FilmPopupPresenter {
   constructor(changeData, changeMode) {
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-
-    this.#scrollTop = 0;
   }
 
   get film(){
@@ -69,16 +67,6 @@ resetView = () => {
   document.removeEventListener('keydown', this.#onEscKeyDown);
   document.body.classList.remove('hide-overflow');
 }
-
-
-#onEscKeyDown = (evt) => {
-  if (evt.key === 'Escape' || evt.key === 'Esc') {
-    evt.preventDefault();
-    this.#filmPopup.restore(this.#film);
-    this.#destroyPopup();
-    document.removeEventListener('keydown', this.#onEscKeyDown);
-  }
-};
 
 
 #handleCloseButtonClick = () => {
@@ -136,5 +124,14 @@ resetView = () => {
     UpdateType.MINOR,
     comment,);
 }
+
+#onEscKeyDown = (evt) => {
+  if (evt.key === 'Escape' || evt.key === 'Esc') {
+    evt.preventDefault();
+    this.#filmPopup.restore(this.#film);
+    this.#destroyPopup();
+    document.removeEventListener('keydown', this.#onEscKeyDown);
+  }
+};
 }
 

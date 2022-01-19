@@ -6,10 +6,9 @@ import { StatisticsType } from '../utils/const.js';
 import { turnGenresToCountMap, getFilmsDuration, getTopGenre, convertTime} from '../utils/statistics-helpers.js';
 
 const BAR_HEIGHT = 50;
-const currentDate = dayjs();
 
 const renderFilters = (filters, currentFilter) => filters.map((filter) => {
-  const filterLabel = filter[0] !== '' ? (filter[0].toUpperCase() + filter.slice(1)).split('-').join(' ') : 'No filter available';
+  const filterLabel = filter.charAt(0) !== '' ? (filter.charAt(0).toUpperCase() + filter.slice(1)).split('-').join(' ') : 'No filter available';
   const isChecked = filter === currentFilter;
 
   return `<input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-${filter}" value="${filter}" ${isChecked ? 'checked' : ''}>
@@ -18,7 +17,7 @@ const renderFilters = (filters, currentFilter) => filters.map((filter) => {
 
 const renderChart = (statisticCtx, genres) => {
   const genresNames = genres.map(({ genre }) => genre);
-  const genresNumbers = genres.map(({ count }) => count);
+  const genresDigits = genres.map(({ count }) => count);
 
 
   statisticCtx.height = BAR_HEIGHT * genres.length;
@@ -29,7 +28,7 @@ const renderChart = (statisticCtx, genres) => {
     data: {
       labels: genresNames,
       datasets: [{
-        data: genresNumbers,
+        data: genresDigits,
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
@@ -132,6 +131,7 @@ export default class StatisticsView extends SmartView {
   }
 
   get films() {
+    const currentDate = dayjs();
     switch (this.#currentFilter) {
       case StatisticsType.TODAY:
         return this.#films.filter((film) => currentDate.diff(dayjs(film.watchingDate), 'day') === 0);
@@ -152,7 +152,7 @@ export default class StatisticsView extends SmartView {
 
 
   #setFilterTypeChangeHandler = () => {
-    this.element.querySelector('.statistic__filters').addEventListener('change', this.#onFilterChange);
+    this.element.querySelector('.statistic__filters').addEventListener('change', this.#onFiltersChange);
   };
 
   #setChart = () => {
@@ -181,7 +181,7 @@ export default class StatisticsView extends SmartView {
   };
 
 
-  #onFilterChange = (evt) => {
+  #onFiltersChange = (evt) => {
     this.#currentFilter = evt.target.value;
     this.updateData(this.#parseWatchedFilmsToData(this.films));
 
