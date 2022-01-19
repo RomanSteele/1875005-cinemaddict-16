@@ -2,12 +2,13 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
+const MINUTES_IN_HOUR = 60;
+
 export const convertTime = (minutesQuantity) => {
-  const minutesInHour = 60;
   const count = minutesQuantity;
-  const hours = (count / minutesInHour);
+  const hours = (count / MINUTES_IN_HOUR);
   const roundedHours = Math.floor(hours);
-  const minutes = (hours - roundedHours) * minutesInHour;
+  const minutes = (hours - roundedHours) * MINUTES_IN_HOUR;
   const roundedMinutes = Math.round(minutes);
   return {roundedHours, roundedMinutes} ;
 };
@@ -22,7 +23,7 @@ export const getFilmsDuration = (films) => films.reduce((totalTime, currentFilm)
 export const turnGenresToCountMap = (films) => Object
   .entries(films.reduce((accumulator, currentFilm) => {
     currentFilm.genres.forEach((genre) => {
-      accumulator[genre] = genre in accumulator ? accumulator[genre]+=1 : 1;
+      accumulator[genre] = genre in accumulator ? accumulator[genre]+1 : 1;
     });
 
 

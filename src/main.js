@@ -1,8 +1,9 @@
 import {RenderPosition, render, remove} from './utils/render.js';
 import {generateCard} from './mock/card.js';
 import FilmsView from './view/films-view.js';
-import createProfileRatingTemplate from './view/profile-rating-view.js';
-import {StatisticsItem, watchedFilmsCountToUserRank} from './utils/const.js';
+import RankView from './view/rank-view.js';
+import {StatisticsItem} from './utils/const.js';
+import {shiftFilmsCountToUserRank} from './utils/helpers.js';
 
 import FilterPresenter from './presenter/filter-presenter.js';
 import FilmsPresenter from './presenter/film-cards-presenter.js';
@@ -37,11 +38,11 @@ commentsModel.comments = comments;
 const allFilmsView = new FilmsView();
 render(siteMain, allFilmsView.element, RenderPosition.BEFORE_END);
 
-const userRank = watchedFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
+const userRank = shiftFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
 
 const statisticsButtonComponent = new StatisticsButtonView();
 const siteHeader = document.querySelector('.header');
-render(siteHeader, new createProfileRatingTemplate(userRank), RenderPosition.BEFORE_END);
+render(siteHeader, new RankView(userRank), RenderPosition.BEFORE_END);
 
 const filterPresenter = new FilterPresenter(statisticsButtonComponent, filterModel, filmsModel);
 const filmsPresenter = new FilmsPresenter(allFilmsView, filmsModel, filterModel, commentsModel);
