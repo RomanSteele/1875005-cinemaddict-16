@@ -44,23 +44,23 @@ export const Rank = {
   MOVIE_BUFF: 'Movie Buff',
 };
 
-export const RankTypes = {
+export const RankType = {
   NOVICE: {
-    min: 1,
-    max: 10,
+    MIN: 1,
+    MAX: 10,
   },
   FAN: {
-    min: 11,
-    max: 20,
+    MIN: 11,
+    MAX: 20,
   },
   MOVIE_BUFF: {
-    min: 21,
+    MIN: 21,
   }
 };
 
 export const DesctiptionLettersQuantity = {
-  short: 139,
-  long: 140,
+  SHORT: 139,
+  LONG: 140,
 };
 
 export const FilterType = {
@@ -69,3 +69,5 @@ export const FilterType = {
   HISTORY: 'history',
   FAVORITE: 'favorites',
 };
+
+export const MINUTES_IN_HOUR = 60;

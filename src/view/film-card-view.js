@@ -31,7 +31,7 @@ const createFilmCardTemplate = (film) => {
   } = film;
 
 
-  const descriptionFormat = (description.length > DesctiptionLettersQuantity.long) ? `${description.slice(0, DesctiptionLettersQuantity.short)}...` : description;
+  const descriptionFormat = (description.length > DesctiptionLettersQuantity.LONG) ? `${description.slice(0, DesctiptionLettersQuantity.SHORT)}...` : description;
 
   return`<article class="film-card">
           <a class="film-card__link">

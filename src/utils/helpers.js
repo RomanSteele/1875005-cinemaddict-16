@@ -1,10 +1,9 @@
-import {Rank, RankTypes} from './const.js';
+import {Rank, RankType, MINUTES_IN_HOUR} from './const.js';
 
-const MINUTES_IN_HOURS = 60;
 
 export const shiftDurationToHours = (timeInMinutes) => {
-  const hours = Math.trunc(timeInMinutes/MINUTES_IN_HOURS);
-  const minutes = timeInMinutes % MINUTES_IN_HOURS;
+  const hours = Math.trunc(timeInMinutes/MINUTES_IN_HOUR);
+  const minutes = timeInMinutes % MINUTES_IN_HOUR;
   return `${hours  }h ${  minutes  }m`;
 };
 
@@ -12,13 +11,13 @@ export const shiftFilmsCountToUserRank = (count) => {
 
   let userRank = '';
 
-  const { NOVICE, FAN, MOVIE_BUFF } = RankTypes;
+  const { NOVICE, FAN, MOVIE_BUFF } = RankType;
 
-  if (count >= NOVICE.min && count <= NOVICE.max) {
+  if (count >= NOVICE.MIN && count <= NOVICE.MAX) {
     userRank = Rank.NOVICE;
-  } else if (count >= FAN.min && count <= FAN.max) {
+  } else if (count >= FAN.MIN && count <= FAN.MAX) {
     userRank = Rank.FAN;
-  } else if (count>= MOVIE_BUFF.min) {
+  } else if (count>= MOVIE_BUFF.MIN) {
     userRank = Rank.MOVIE_BUFF;
   } else {
     userRank = '';

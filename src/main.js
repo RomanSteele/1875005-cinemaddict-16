@@ -16,11 +16,14 @@ import StatisticsButtonView from './view/statistics-button-view.js';
 import StatisticsView from './view/statistics-view.js';
 import FilmsQuantityView from './view/films-quantity-view.js';
 
+import ApiService from './api-service.js';
+
 const siteMain = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 
 const films = Array.from({ length: 24 }, generateCard);
-
+const AUTHORIZATION = 'Basic ZZqP5God45K5';
+const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
 
 const comments = films.reduce((commentsList, film) => {
   const filmComments = film.comments;
@@ -29,7 +32,8 @@ const comments = films.reduce((commentsList, film) => {
 
 
 const filterModel = new FilterModel();
-const filmsModel = new FilmsModel();
+//const filmsModel = new FilmsModel();
+const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));
 const commentsModel = new CommentsModel();
 
 filmsModel.films = films;
