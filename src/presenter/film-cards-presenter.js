@@ -3,7 +3,7 @@ import FilmsSectionView from '../view/films-section-view.js';
 import FilmsContainerView from '../view/films-container-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import EmptyListView from '../view/empty-list-view.js';
-
+import LoadingView from '../view/loading-view.js';
 
 import {RenderPosition, render, remove} from '../utils/render.js';
 import { sortFilmsByDate, sortFilmsByRating} from '../utils.js';
@@ -30,14 +30,14 @@ export default class FilmsPresenter {
   #filmsModel = null;
   #filmsPresenter = new Map();
   #commentsModel = null;
-
   #popupPresenter = null;
 
+  #loadingComponent = new LoadingView();
 
   #renderedFilmCount = CARDS_PER_STEP;
   #currentSortType = SortType.DEFAULT;
   #isErased = false;
-
+  #isLoading = true;
 
   constructor(container, filmsModel, filterModel, commentsModel) {
     this.#container = container;
@@ -125,6 +125,10 @@ export default class FilmsPresenter {
 
   #renderCards = (films) => {
     films.forEach((film)=> this.#renderCard(film));
+  }
+
+  #renderLoading = () => {
+    render(this.#filmsSectionComponent, this.#loadingComponent, RenderPosition.AFTER_BEGIN);
   }
 
 
@@ -221,8 +225,12 @@ export default class FilmsPresenter {
         }
         this.#clearBoard({resetRenderedFilmCount: true , resetSortType: true});
         this.#renderBoard();
+        break;
 
-
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
         break;
     }
 
@@ -280,6 +288,7 @@ export default class FilmsPresenter {
     this.#filmsPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#emptyListComponent);
     remove(this.#showMoreButtonComponent);
 
@@ -292,6 +301,12 @@ export default class FilmsPresenter {
 
 
   #renderBoard = () =>{
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const films = this.films;
     const filmsCount = films.length;
     if (filmsCount === 0) {

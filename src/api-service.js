@@ -76,7 +76,7 @@ export default class ApiService {
         'genre': film.genres,
         'poster': film.imgSource,
         'release': {
-          'date': film.release,
+          'date': film.releaseDate,
           'release_country': film.releaseCountry,
         },
         'runtime': film.duration,

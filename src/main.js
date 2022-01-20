@@ -1,5 +1,5 @@
 import {RenderPosition, render, remove} from './utils/render.js';
-import {generateCard} from './mock/card.js';
+//import {generateCard} from './mock/card.js';
 import FilmsView from './view/films-view.js';
 import RankView from './view/rank-view.js';
 import {StatisticsItem} from './utils/const.js';
@@ -21,32 +21,21 @@ import ApiService from './api-service.js';
 const siteMain = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 
-const films = Array.from({ length: 24 }, generateCard);
+//const films = Array.from({ length: 24 }, generateCard);
 const AUTHORIZATION = 'Basic ZZqP5God45K5';
 const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
 
-const comments = films.reduce((commentsList, film) => {
-  const filmComments = film.comments;
-  return [...commentsList, ...filmComments];
-}, []);
-
-
 const filterModel = new FilterModel();
-//const filmsModel = new FilmsModel();
 const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));
 const commentsModel = new CommentsModel();
 
-filmsModel.films = films;
-commentsModel.comments = comments;
 
 const allFilmsView = new FilmsView();
 render(siteMain, allFilmsView.element, RenderPosition.BEFORE_END);
-
-const userRank = shiftFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
+let userRank = null;
 
 const statisticsButtonComponent = new StatisticsButtonView();
 const siteHeader = document.querySelector('.header');
-render(siteHeader, new RankView(userRank), RenderPosition.BEFORE_END);
 
 const filterPresenter = new FilterPresenter(statisticsButtonComponent, filterModel, filmsModel);
 const filmsPresenter = new FilmsPresenter(allFilmsView, filmsModel, filterModel, commentsModel);
@@ -74,9 +63,13 @@ const handleStatsClick = (statisticsItem) => {
   currentStatisticsItem = statisticsItem;
 };
 
-statisticsButtonComponent.setStatisticsButtonClickHandler(handleStatsClick);
 render(siteMain, statisticsButtonComponent, RenderPosition.AFTER_BEGIN);
-render(siteFooter, new FilmsQuantityView(films.length), RenderPosition.BEFORE_END);
 filterPresenter.init();
 filmsPresenter.init();
 
+filmsModel.init().finally(() => {
+  userRank = shiftFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
+  render(siteHeader, new RankView(userRank), RenderPosition.BEFORE_END);
+  statisticsButtonComponent.setStatisticsButtonClickHandler(handleStatsClick);
+  render(siteFooter, new FilmsQuantityView(filmsModel.films.length), RenderPosition.BEFORE_END);
+});

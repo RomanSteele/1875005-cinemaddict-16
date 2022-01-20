@@ -76,7 +76,7 @@ export const createInfoPopupTemplate = (film) => {
     director,
     writers,
     actors,
-    release,
+    releaseDate,
     releaseCountry,
     duration,
     genres,
@@ -120,7 +120,7 @@ export const createInfoPopupTemplate = (film) => {
           ${createTableRowTemplate('Director',director)}
           ${createTableRowTemplate('Writers',writers.join(', '))}
           ${createTableRowTemplate('Actors',actors.join(', '))}
-          ${createTableRowTemplate('Release Date',release.format('DD MMMM YYYY'))}
+          ${createTableRowTemplate('Release Date',releaseDate.format('DD MMMM YYYY'))}
           ${createTableRowTemplate('Runtime',shiftDurationToHours(duration))}
           ${createTableRowTemplate('Country',releaseCountry)}
           ${createTableRowTemplate(useGenreOrGenres(genres), genresTemplate)}
