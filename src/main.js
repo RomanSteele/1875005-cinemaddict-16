@@ -1,5 +1,4 @@
 import {RenderPosition, render, remove} from './utils/render.js';
-//import {generateCard} from './mock/card.js';
 import FilmsView from './view/films-view.js';
 import RankView from './view/rank-view.js';
 import {StatisticsItem} from './utils/const.js';

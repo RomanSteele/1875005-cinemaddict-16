@@ -98,7 +98,7 @@ export default class ApiService {
     };
     return adaptedFilm;
   }
-
+/*
   #adaptCommentToServer = (comment) => {
     const adaptedUserComment = {
       'comment': comment.text,
@@ -106,4 +106,5 @@ export default class ApiService {
     };
     return adaptedUserComment;
   }
+  */
 }

@@ -2,8 +2,6 @@ import InfoPopupView from '../view/info-popup-view.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 import {UserAction, UpdateType} from '../utils/const.js';
 
-import { generateComment } from '../mock/comment.js';
-
 
 export default class FilmPopupPresenter {
   #changeData = null;
@@ -37,8 +35,8 @@ export default class FilmPopupPresenter {
   this.#filmPopup.setWatchlistClickHandler(this.#handleWatchlistClick);
   this.#filmPopup.setWatchedlistClickHandler(this.#handleWatchedClick);
   this.#filmPopup.setFavoritelistClickHandler(this.#handleFavoriteClick);
-  this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
-  this.#filmPopup.setCommentDeleteHandler(this.#handleCommentDelete);
+  //this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
+  //this.#filmPopup.setCommentDeleteHandler(this.#handleCommentDelete);
 
   if(prevFilmPopup !== null){
     this.#scrollTop = prevFilmPopup.element.scrollTop;
@@ -107,7 +105,7 @@ resetView = () => {
     });
 };
 
-
+/*
 #handleCommentAdd = (comment) => {
   const newComment = { ...generateComment(Math.random()), ...comment};
   this.#changeData(
@@ -123,6 +121,7 @@ resetView = () => {
     UpdateType.MINOR,
     comment,);
 }
+*/
 
 #onEscKeyDown = (evt) => {
   if (evt.key === 'Escape' || evt.key === 'Esc') {
