@@ -13,6 +13,6 @@ export const updateItemById = (items, update) => {
 };
 
 
-export const sortFilmsByDate = (previousFilm, currentFilm) =>  currentFilm.release - previousFilm.release;
+export const sortFilmsByDate = (previousFilm, currentFilm) =>  currentFilm.releaseDate - previousFilm.releaseDate;
 
 export const sortFilmsByRating = (previousFilm, currentFilm) => currentFilm.rating - previousFilm.rating;

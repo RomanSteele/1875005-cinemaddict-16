@@ -1,5 +1,4 @@
 import {RenderPosition, render, remove} from './utils/render.js';
-import {generateCard} from './mock/card.js';
 import FilmsView from './view/films-view.js';
 import RankView from './view/rank-view.js';
 import {StatisticsItem} from './utils/const.js';
@@ -16,33 +15,25 @@ import StatisticsButtonView from './view/statistics-button-view.js';
 import StatisticsView from './view/statistics-view.js';
 import FilmsQuantityView from './view/films-quantity-view.js';
 
+import ApiService from './api-service.js';
+
 const siteMain = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 
-const films = Array.from({ length: 24 }, generateCard);
-
-
-const comments = films.reduce((commentsList, film) => {
-  const filmComments = film.comments;
-  return [...commentsList, ...filmComments];
-}, []);
-
+const AUTHORIZATION = 'Basic ZZqP5God45K5';
+const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
 
 const filterModel = new FilterModel();
-const filmsModel = new FilmsModel();
-const commentsModel = new CommentsModel();
+const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));
+const commentsModel = new CommentsModel(new ApiService(END_POINT, AUTHORIZATION));
 
-filmsModel.films = films;
-commentsModel.comments = comments;
 
 const allFilmsView = new FilmsView();
 render(siteMain, allFilmsView.element, RenderPosition.BEFORE_END);
-
-const userRank = shiftFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
+let userRank = null;
 
 const statisticsButtonComponent = new StatisticsButtonView();
 const siteHeader = document.querySelector('.header');
-render(siteHeader, new RankView(userRank), RenderPosition.BEFORE_END);
 
 const filterPresenter = new FilterPresenter(statisticsButtonComponent, filterModel, filmsModel);
 const filmsPresenter = new FilmsPresenter(allFilmsView, filmsModel, filterModel, commentsModel);
@@ -70,9 +61,12 @@ const handleStatsClick = (statisticsItem) => {
   currentStatisticsItem = statisticsItem;
 };
 
-statisticsButtonComponent.setStatisticsButtonClickHandler(handleStatsClick);
 render(siteMain, statisticsButtonComponent, RenderPosition.AFTER_BEGIN);
-render(siteFooter, new FilmsQuantityView(films.length), RenderPosition.BEFORE_END);
 filterPresenter.init();
 filmsPresenter.init();
-
+filmsModel.init().finally(() => {
+  userRank = shiftFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
+  render(siteHeader, new RankView(userRank), RenderPosition.BEFORE_END);
+  statisticsButtonComponent.setStatisticsButtonClickHandler(handleStatsClick);
+  render(siteFooter, new FilmsQuantityView(filmsModel.films.length), RenderPosition.BEFORE_END);
+});

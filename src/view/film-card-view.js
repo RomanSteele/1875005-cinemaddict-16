@@ -18,7 +18,7 @@ const createFilmCardTemplate = (film) => {
   const {
     title,
     rating,
-    release,
+    releaseDate,
     duration,
     genres,
     imgSource,
@@ -31,14 +31,14 @@ const createFilmCardTemplate = (film) => {
   } = film;
 
 
-  const descriptionFormat = (description.length > DesctiptionLettersQuantity.long) ? `${description.slice(0, DesctiptionLettersQuantity.short)}...` : description;
+  const descriptionFormat = (description.length > DesctiptionLettersQuantity.LONG) ? `${description.slice(0, DesctiptionLettersQuantity.SHORT)}...` : description;
 
   return`<article class="film-card">
           <a class="film-card__link">
             <h3 class="film-card__title">${title}</h3>
             <p class="film-card__rating">${rating}</p>
             <p class="film-card__info">
-              <span class="film-card__year">${release.format('YYYY')}</span>
+              <span class="film-card__year">${releaseDate.format('YYYY')}</span>
               <span class="film-card__duration">${shiftDurationToHours(duration)}</span>
               <span class="film-card__genre">${genres[0]}</span>
             </p>

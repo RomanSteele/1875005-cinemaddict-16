@@ -8,7 +8,7 @@ import { turnGenresToCountMap, getFilmsDuration, getTopGenre, convertTime} from 
 const BAR_HEIGHT = 50;
 
 const renderFilters = (filters, currentFilter) => filters.map((filter) => {
-  const filterLabel = filter.charAt(0) !== '' ? (filter.charAt(0).toUpperCase() + filter.slice(1)).split('-').join(' ') : 'No filter available';
+  const filterLabel = (filter.charAt(0).toUpperCase() + filter.slice(1)).split('-').join(' ');
   const isChecked = filter === currentFilter;
 
   return `<input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-${filter}" value="${filter}" ${isChecked ? 'checked' : ''}>
