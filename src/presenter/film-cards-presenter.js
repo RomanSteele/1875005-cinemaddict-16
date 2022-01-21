@@ -73,7 +73,7 @@ export default class FilmsPresenter {
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
-    this.#commentsModel.addObserver(this.#handleCommentModelEvent);
+    //this.#commentsModel.addObserver(this.#handleCommentModelEvent);
 
     this.#isErased = false;
   }
@@ -87,7 +87,7 @@ export default class FilmsPresenter {
     remove(this.#filmsSectionComponent);
 
     this.#filmsModel.removeObserver(this.#handleModelEvent);
-    this.#commentsModel.removeObserver(this.#handleCommentModelEvent);
+    //this.#commentsModel.removeObserver(this.#handleCommentModelEvent);
 
     this.#isErased = true;
   };
@@ -117,8 +117,7 @@ export default class FilmsPresenter {
       this.#handleModeChange,
     );
 
-    const comments = [this.#commentsModel.comments.filter((comment) => film.comments.includes(comment.id))];
-    presenter.init(film, comments);
+    presenter.init(film);
     this.#filmsPresenter.set(film.id, presenter);
   }
 
@@ -141,16 +140,15 @@ export default class FilmsPresenter {
   #renderPopup = (filmId) => {
 
     const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
+    this.#commentsModel.init(filmId).finally(() => {
+      if (this.#popupPresenter && this.#popupPresenter.film.id !== filmId) {
+        this.#popupPresenter.resetView();
+      }
 
-    if (this.#popupPresenter && this.#popupPresenter.film.id !== filmId) {
-      this.#popupPresenter.resetView();
-    }
-
-    this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#handleModeChange);
-
-    const comments = [this.#commentsModel.comments.filter((comment) => film.comments.includes(comment.id))];
-    this.#popupPresenter.init(film, comments);
-
+      this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#handleModeChange);
+      const comments = this.#commentsModel.comments;
+      this.#popupPresenter.init(film, comments);
+    });
   }
 
 
@@ -159,7 +157,7 @@ export default class FilmsPresenter {
       const filmId = this.#popupPresenter.film.id;
       const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
 
-      const comments = this.#commentsModel.comments.filter((comment) => film.comments.includes(comment.id));
+      const comments = this.#commentsModel.comments;
       this.#popupPresenter.init(film, comments);
     }
   };
@@ -236,7 +234,7 @@ export default class FilmsPresenter {
 
   }
 
-
+  /*
   #handleCommentModelEvent = (actionType, update) => {
     const currentFilm = this.#filmsModel.films.find((film) => film.id  === this.#popupPresenter.film.id);
     let indexes = null;
@@ -256,7 +254,7 @@ export default class FilmsPresenter {
 
     }
   };
-
+*/
 
   #renderShowMoreButton = () => {
     this.#showMoreButtonComponent = new ShowMoreButtonView();

@@ -17,6 +17,11 @@ export default class ApiService {
       .then(ApiService.parseResponse);
   }
 
+  getComments(filmId) {
+    return this.#load({ url: `comments/${filmId}` })
+      .then(ApiService.parseResponse);
+  }
+
   updateFilm = async (film) => {
     const response = await this.#load({
       url: `movies/${film.id}`,
@@ -92,5 +97,13 @@ export default class ApiService {
       },
     };
     return adaptedFilm;
+  }
+
+  #adaptCommentToServer = (comment) => {
+    const adaptedUserComment = {
+      'comment': comment.text,
+      'emotion' : comment.emotion,
+    };
+    return adaptedUserComment;
   }
 }

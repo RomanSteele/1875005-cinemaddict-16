@@ -65,7 +65,7 @@ const createControlButtonTemplate = (name, title, isActive) => {
 
 const createCommentsTemplate = (comments) => comments.map(createCommentTemplate).join('');
 
-export const createInfoPopupTemplate = (film) => {
+export const createInfoPopupTemplate = (film, comments) => {
 
   const {
     title,
@@ -88,7 +88,7 @@ export const createInfoPopupTemplate = (film) => {
     emotion,
   } = film;
 
-  const commentsTemplate = createCommentsTemplate(film.comments);
+  const commentsTemplate = createCommentsTemplate(comments);
   const genresTemplate = genres.map(createGenreTemplate).join('');
   const emotionsTemplate = createEmotionsTemplate(COMMENT_EMOJIS, emotion);
 
@@ -157,16 +157,17 @@ export const createInfoPopupTemplate = (film) => {
 };
 
 export default class InfoPopupView extends SmartView {
+  #comments = null;
 
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._data = InfoPopupView.parseFilmToData(film);
-
+    this.#comments = comments;
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createInfoPopupTemplate(this._data);
+    return createInfoPopupTemplate(this._data,this.#comments);
   }
 
   get state() {

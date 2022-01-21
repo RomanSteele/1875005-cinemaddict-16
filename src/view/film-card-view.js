@@ -32,7 +32,7 @@ const createFilmCardTemplate = (film) => {
 
 
   const descriptionFormat = (description.length > DesctiptionLettersQuantity.LONG) ? `${description.slice(0, DesctiptionLettersQuantity.SHORT)}...` : description;
-console.log(releaseDate)
+
   return`<article class="film-card">
           <a class="film-card__link">
             <h3 class="film-card__title">${title}</h3>

@@ -21,13 +21,12 @@ import ApiService from './api-service.js';
 const siteMain = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer');
 
-//const films = Array.from({ length: 24 }, generateCard);
 const AUTHORIZATION = 'Basic ZZqP5God45K5';
 const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
 
 const filterModel = new FilterModel();
 const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));
-const commentsModel = new CommentsModel();
+const commentsModel = new CommentsModel(new ApiService(END_POINT, AUTHORIZATION));
 
 
 const allFilmsView = new FilmsView();
@@ -66,7 +65,6 @@ const handleStatsClick = (statisticsItem) => {
 render(siteMain, statisticsButtonComponent, RenderPosition.AFTER_BEGIN);
 filterPresenter.init();
 filmsPresenter.init();
-
 filmsModel.init().finally(() => {
   userRank = shiftFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
   render(siteHeader, new RankView(userRank), RenderPosition.BEFORE_END);

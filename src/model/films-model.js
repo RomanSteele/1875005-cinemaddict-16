@@ -10,11 +10,6 @@ constructor(apiService) {
   super();
   this.#apiService = apiService;
 }
-/*
-set films(films) {
-  this.#films = [...films];
-}
-*/
 
 get films() {
   return this.#films;
@@ -94,7 +89,6 @@ updateFilm = (updateType, update) => {
       watchingDate: new Date(film['user_details']['watching_date']),
       isFavorite: film['user_details'].favorite,
     };
-    console.log(adaptedFilm);
     return adaptedFilm;
   }
 }

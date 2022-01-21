@@ -27,7 +27,6 @@ export default class FilmPopupPresenter {
   init = (film,comments) => {
     this.#film = film;
     this.#comments = comments;
-
     this.#renderPopup();
   }
 
