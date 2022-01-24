@@ -72,7 +72,6 @@ export default class FilmsPresenter {
 
 
   init = () => {
-
     this.#filmsSectionComponent = new FilmsSectionView();
     this.#filmContainerComponent = new FilmsContainerView();
 
@@ -90,14 +89,16 @@ export default class FilmsPresenter {
 
 
   erase = () => {
-
     this.#clearBoard();
 
     remove(this.#filmContainerComponent);
     remove(this.#filmsSectionComponent);
 
+    remove(this.#topExtraComponent);
+    remove(this.#commentExtraComponent);
+
     this.#filmsModel.removeObserver(this.#handleModelEvent);
-    //this.#commentsModel.removeObserver(this.#handleCommentModelEvent);
+    this.#commentsModel.removeObserver(this.#handleModelEvent);
 
     this.#isErased = true;
   };
@@ -148,7 +149,6 @@ export default class FilmsPresenter {
 
 
   #renderPopup = (filmId) => {
-
     const film = this.#filmsModel.films.find((filmItem) => filmId === filmItem.id);
     this.#commentsModel.init(filmId).finally(() => {
       if (this.#popupPresenter && this.#popupPresenter.film.id !== filmId) {
@@ -207,7 +207,6 @@ export default class FilmsPresenter {
 
 
   #handleViewAction = (actionType, updateType, update, film, filmId) => {
-
     switch (actionType) {
 
       case UserAction.WATCHLIST_ADD:
@@ -231,7 +230,7 @@ export default class FilmsPresenter {
         this.#filmsModel.updateFilm(updateType, update);
         break;
 
-      case UserAction.ADD_COMMENT:
+      case UserAction.COMMENT_ADD:
         this.#commentsModel.addComment(updateType, update, film, filmId);
         break;
 
@@ -318,7 +317,6 @@ export default class FilmsPresenter {
 
 
   #renderBoard = () =>{
-
     if (this.#isLoading) {
       this.#renderLoading();
       return;

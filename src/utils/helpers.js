@@ -1,6 +1,5 @@
 import {Rank, RankType, MINUTES_IN_HOUR} from './const.js';
 
-
 export const shiftDurationToHours = (timeInMinutes) => {
   const hours = Math.trunc(timeInMinutes/MINUTES_IN_HOUR);
   const minutes = timeInMinutes % MINUTES_IN_HOUR;

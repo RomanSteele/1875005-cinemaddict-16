@@ -27,6 +27,7 @@ init = async () => {
   this._notify(UpdateType.INIT);
 }
 
+
 updateFilm = async (updateType, update) => {
   const index = this.#films.findIndex((film) => film.id === update.id);
 

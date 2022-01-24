@@ -26,7 +26,6 @@ export const UpdateType = {
   INIT: 'INIT',
 };
 
-
 export const StatisticsItem = {
   STATISTICS: 'stats'
 };

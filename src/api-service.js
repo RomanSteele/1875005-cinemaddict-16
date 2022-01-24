@@ -31,6 +31,18 @@ export default class ApiService {
       body: JSON.stringify(this.#adaptToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  addComment = async (comment, filmId) => {
+    const response = await this.#load({
+      url:  `comments/${filmId}`,
+      method: Method.POST,
+      body: JSON.stringify(comment),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
 
     const parsedResponse = await ApiService.parseResponse(response);
 
@@ -42,6 +54,7 @@ export default class ApiService {
       url: `comments/${commentId}`,
       method: Method.DELETE,
     });
+
 
   #load = async ({
     url,
@@ -64,17 +77,6 @@ export default class ApiService {
     }
   }
 
-  static parseResponse = (response) => response.json();
-
-  static checkStatus = (response) => {
-    if (!response.ok) {
-      throw new Error(`${response.status}: ${response.statusText}`);
-    }
-  }
-
-  static catchError = (err) => {
-    throw err;
-  }
 
   #adaptToServer = (film) => {
     const adaptedFilm = {
@@ -106,13 +108,20 @@ export default class ApiService {
     };
     return adaptedFilm;
   }
-/*
-  #adaptCommentToServer = (comment) => {
-    const adaptedUserComment = {
-      'comment': comment.text,
-      'emotion' : comment.emotion,
-    };
-    return adaptedUserComment;
+
+
+  static parseResponse = (response) => response.json();
+
+
+  static checkStatus = (response) => {
+    if (!response.ok) {
+      throw new Error(`${response.status}: ${response.statusText}`);
+    }
   }
-  */
+
+
+  static catchError = (err) => {
+    throw err;
+  }
+
 }

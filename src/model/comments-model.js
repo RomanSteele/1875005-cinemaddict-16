@@ -14,28 +14,29 @@ export default class CommentsModel extends AbstractObservable {
     return this.#comments;
   }
 
+
   init = async (filmId) => {
     try {
       const comments = await this.#apiService.getComments(filmId);
-      this.#comments = comments.map(this.#adaptToClient);
+      this.#comments = comments;
     } catch (err) {
       this.#comments = [];
     }
   }
 
+
   addComment = async (updateType, update, film, filmId) => {
     try {
       const response = await this.#apiService.addComment(update, filmId);
-      this.#comments = [
-        response,
-        ...this.#comments,
-      ];
+      this.#comments = response.comments;
       film = {...film, comments: response.movie.comments};
+
       this._notify(updateType, film);
     } catch(error) {
       throw new Error('Can\'t add comment');
     }
   }
+
 
   deleteComment = async (updateType, commentId, film) => {
     const index = this.#comments.findIndex((comment) => comment.id === commentId);
@@ -56,15 +57,4 @@ export default class CommentsModel extends AbstractObservable {
     }
   };
 
-
-  #adaptToClient = (comment) => {
-    const adaptedComment = {
-      id: comment.id,
-      text: comment.comment,
-      author: comment.author,
-      date: comment.date,
-      emotion: comment.emotion,
-    };
-    return adaptedComment;
-  }
 }

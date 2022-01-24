@@ -28,6 +28,7 @@ export default class FilmPopupPresenter {
     this.#renderPopup();
   }
 
+
 #renderPopup = () => {
   const prevFilmPopup = this.#filmPopup;
   this.#filmPopup = new InfoPopupView(this.#film, this.#comments);
@@ -35,7 +36,7 @@ export default class FilmPopupPresenter {
   this.#filmPopup.setWatchlistClickHandler(this.#handleWatchlistClick);
   this.#filmPopup.setWatchedlistClickHandler(this.#handleWatchedClick);
   this.#filmPopup.setFavoritelistClickHandler(this.#handleFavoriteClick);
-  //this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
+  this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
   this.#filmPopup.setCommentDeleteHandler(this.#handleCommentDelete);
 
   if(prevFilmPopup !== null){
@@ -105,15 +106,15 @@ resetView = () => {
     });
 };
 
-/*
-#handleCommentAdd = (comment) => {
-  const newComment = { ...generateComment(Math.random()), ...comment};
+
+#handleCommentAdd = (newComment) => {
+  const id = this.#film.id;
   this.#changeData(
     UserAction.COMMENT_ADD,
     UpdateType.MINOR,
-    newComment,);
+    newComment,{...this.#film}, id);
 };
-*/
+
 
 #handleCommentDelete = (commentId) => {
   this.#changeData(

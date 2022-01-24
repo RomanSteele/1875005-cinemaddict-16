@@ -1,6 +1,5 @@
 import {FilterType, UserAction} from '../utils/const.js';
 
-
 export const filterTypeToFilms  = {
   [FilterType.ALL]: (films) => films.slice(),
   [FilterType.WATCHLIST]: (films) => films.filter((film) => film.inWatchlist),
