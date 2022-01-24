@@ -1,5 +1,5 @@
 import AbstractObservable from '../model/abstract-observable.js';
-import {UpdateType} from '../utils/const.js';
+
 
 export default class CommentsModel extends AbstractObservable {
   #apiService = null;
@@ -21,23 +21,24 @@ export default class CommentsModel extends AbstractObservable {
     } catch (err) {
       this.#comments = [];
     }
-
-    this._notify(UpdateType.INIT);
   }
-  /*
-  addComment = async (filmId, comment) => {
+
+  addComment = async (updateType, update, film, filmId) => {
     try {
-      const response = await this.#apiService.addComment(filmId, comment);
-      this.#comments = response.comments;
-      this._notify();
-    } catch (err) {
+      const response = await this.#apiService.addComment(update, filmId);
+      this.#comments = [
+        response,
+        ...this.#comments,
+      ];
+      film = {...film, comments: response.movie.comments};
+      this._notify(updateType, film);
+    } catch(error) {
       throw new Error('Can\'t add comment');
     }
-  };
+  }
 
-  deleteComment = async (commentId) => {
+  deleteComment = async (updateType, commentId, film) => {
     const index = this.#comments.findIndex((comment) => comment.id === commentId);
-
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
     }
@@ -48,13 +49,13 @@ export default class CommentsModel extends AbstractObservable {
         ...this.#comments.slice(0, index),
         ...this.#comments.slice(index + 1)
       ];
-
-      this._notify();
+      film = {...film, comments: film.comments.filter((comment) => comment !== commentId)};
+      this._notify(updateType, film);
     } catch (err) {
       throw new Error('Can\'t delete comment');
     }
   };
-*/
+
 
   #adaptToClient = (comment) => {
     const adaptedComment = {

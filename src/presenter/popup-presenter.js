@@ -36,7 +36,7 @@ export default class FilmPopupPresenter {
   this.#filmPopup.setWatchedlistClickHandler(this.#handleWatchedClick);
   this.#filmPopup.setFavoritelistClickHandler(this.#handleFavoriteClick);
   //this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
-  //this.#filmPopup.setCommentDeleteHandler(this.#handleCommentDelete);
+  this.#filmPopup.setCommentDeleteHandler(this.#handleCommentDelete);
 
   if(prevFilmPopup !== null){
     this.#scrollTop = prevFilmPopup.element.scrollTop;
@@ -113,15 +113,15 @@ resetView = () => {
     UpdateType.MINOR,
     newComment,);
 };
+*/
 
-
-#handleCommentDelete = (comment) => {
+#handleCommentDelete = (commentId) => {
   this.#changeData(
     UserAction.COMMENT_DELETE,
     UpdateType.MINOR,
-    comment,);
+    commentId,{...this.#film});
 }
-*/
+
 
 #onEscKeyDown = (evt) => {
   if (evt.key === 'Escape' || evt.key === 'Esc') {

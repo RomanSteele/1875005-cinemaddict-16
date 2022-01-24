@@ -1,6 +1,8 @@
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  DELETE: 'DELETE',
+  POST: 'POST',
 };
 
 export default class ApiService {
@@ -34,6 +36,12 @@ export default class ApiService {
 
     return parsedResponse;
   }
+
+  deleteComment = async (commentId) =>
+    await this.#load({
+      url: `comments/${commentId}`,
+      method: Method.DELETE,
+    });
 
   #load = async ({
     url,
