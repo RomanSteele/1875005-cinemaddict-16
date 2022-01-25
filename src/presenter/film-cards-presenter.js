@@ -6,7 +6,7 @@ import EmptyListView from '../view/empty-list-view.js';
 import LoadingView from '../view/loading-view.js';
 
 import {RenderPosition, render, remove} from '../utils/render.js';
-import { sortFilmsByDate, sortFilmsByRating, sortExtraList} from '../utils.js';
+import { sortFilmsByDate, sortFilmsByRating, sortExtraListMostCommented, sortExtraListTopRated} from '../utils.js';
 
 import SingleCardPresenter from './film-presenter.js';
 import {filterTypeToFilms, actionTypeToFilterType } from '../utils/filters.js';
@@ -155,7 +155,7 @@ export default class FilmsPresenter {
         this.#popupPresenter.resetView();
       }
 
-      this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#handleModeChange);
+      this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction);
       const comments = this.#commentsModel.comments;
       this.#popupPresenter.init(film, comments);
     });
@@ -173,7 +173,7 @@ export default class FilmsPresenter {
   };
 
   #renderTopExtra = () => {
-    const sortFilmsRating = this.#filmsModel.films.sort(sortExtraList('rating'));
+    const sortFilmsRating = this.#filmsModel.films.sort(sortExtraListTopRated);
     render(this.#topExtraComponent, this.#containerForTopRated, RenderPosition.BEFORE_END);
 
     for (let i = 0; i < CARDS_FOR_EXTRA; i++) {
@@ -183,17 +183,19 @@ export default class FilmsPresenter {
 
 
   #renderCommentExtra = () => {
-    const sortFilmsComments = this.#filmsModel.films.sort(sortExtraList('comments'));
+    const sortFilmsComments = this.#filmsModel.films.sort(sortExtraListMostCommented);
     render(this.#commentExtraComponent, this.#containerForMostCommented, RenderPosition.BEFORE_END);
     for (let i = 0; i < CARDS_FOR_EXTRA; i++) {
       this.#renderCard(this.#containerForMostCommented, sortFilmsComments[i]);
     }
   }
 
+
   #renderBothExtra = () => {
     this.#renderTopExtra();
     this.#renderCommentExtra();
   }
+
 
   #clearBothExtra = () =>{
     remove(this.#containerForTopRated);
@@ -298,7 +300,7 @@ export default class FilmsPresenter {
   #clearBoard = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
     const filmCount = this.films.length;
 
-    this.#clearBothExtra();
+    //this.#clearBothExtra();
     this.#filmsPresenter.forEach((presenter) => presenter.destroy());
     this.#filmsPresenter.clear();
 
@@ -333,7 +335,7 @@ export default class FilmsPresenter {
     if (filmsCount > this.#renderedFilmCount) {
       this.#renderShowMoreButton();
     }
-    this.#renderBothExtra();
+    //this.#renderBothExtra();
   }
 
 }

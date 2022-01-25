@@ -5,7 +5,7 @@ import {UserAction, UpdateType} from '../utils/const.js';
 
 export default class FilmPopupPresenter {
   #changeData = null;
-  #changeMode = null;
+
 
   #filmPopup = null;
   #scrollTop = 0;
@@ -13,9 +13,8 @@ export default class FilmPopupPresenter {
   #film = null;
   #comments = null;
 
-  constructor(changeData, changeMode) {
+  constructor(changeData) {
     this.#changeData = changeData;
-    this.#changeMode = changeMode;
   }
 
   get film(){

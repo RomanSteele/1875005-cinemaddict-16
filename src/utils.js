@@ -17,4 +17,6 @@ export const sortFilmsByDate = (previousFilm, currentFilm) =>  currentFilm.relea
 
 export const sortFilmsByRating = (previousFilm, currentFilm) => currentFilm.rating - previousFilm.rating;
 
-export const sortExtraList = (field) => (b, a) => a[field] > b[field] ? 1 : -1;
+export const sortExtraListMostCommented = (previousFilm, currentFilm) => currentFilm.comments.length - previousFilm.comments.length;
+
+export const sortExtraListTopRated = (previousFilm, currentFilm) => currentFilm.rating - previousFilm.rating;
