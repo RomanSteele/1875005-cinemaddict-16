@@ -27,45 +27,26 @@ init = async () => {
   this._notify(UpdateType.INIT);
 }
 
-updateFilm = (updateType, update) => {
+
+updateFilm = async (updateType, update) => {
   const index = this.#films.findIndex((film) => film.id === update.id);
 
   if (index === -1) {
-    return this.#films;
+    throw new Error('Can\'t update unexisting task');
   }
 
-  this.#films = [
-    ...this.#films.slice(0, index),
-    update,
-    ...this.#films.slice(index + 1),
-  ];
-
-  this._notify(updateType, update);
-}
-
-  addFilm = (updateType, update) => {
+  try {
+    const response = await this.#apiService.updateFilm(update);
+    const updatedFilm = this.#adaptToClient(response);
     this.#films = [
-      update,
-      ...this.#films,
+      ...this.#films.slice(0, index), updatedFilm, ...this.#films.slice(index + 1)
     ];
 
     this._notify(updateType, update);
+  } catch (err) {
+    throw new Error('Can\'t update film');
   }
-
-  deleteFilm = (updateType, update) => {
-    const index = this.#films.findIndex((film) => film.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting film');
-    }
-
-    this.#films = [
-      ...this.#films.slice(0, index),
-      ...this.#films.slice(index + 1),
-    ];
-
-    this._notify(updateType);
-  }
+}
 
   #adaptToClient = (film) => {
     const adaptedFilm = {

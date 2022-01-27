@@ -1,5 +1,8 @@
 import {createElement} from '../utils/render.js';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+const MILISECONDS_IN_SECOND = 1000;
+
 export default class AbstractView {
   _callback = {};
   #element = null;
@@ -24,5 +27,13 @@ export default class AbstractView {
 
   removeElement() {
     this.#element = null;
+  }
+
+  shake(callback) {
+    this.element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILISECONDS_IN_SECOND}s`;
+    setTimeout(() => {
+      this.element.style.animation = '';
+      callback();
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

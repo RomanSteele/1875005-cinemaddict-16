@@ -5,28 +5,61 @@ import {UserAction, UpdateType} from '../utils/const.js';
 
 export default class FilmPopupPresenter {
   #changeData = null;
-  #changeMode = null;
 
   #filmPopup = null;
   #scrollTop = 0;
 
   #film = null;
   #comments = null;
+  #destroyedPopup = null;
 
-  constructor(changeData, changeMode) {
+
+  constructor(changeData, handlePopupDestroy) {
     this.#changeData = changeData;
-    this.#changeMode = changeMode;
+    this.#destroyedPopup = handlePopupDestroy;
   }
 
   get film(){
     return this.#film;
   }
 
+
   init = (film,comments) => {
     this.#film = film;
     this.#comments = comments;
     this.#renderPopup();
   }
+
+
+  setDeleting = (updateId = null) => {
+    this.#filmPopup.updateData({
+      isDisabled: true,
+      isDeleting: true,
+      deletingCommentId: updateId,
+    });
+  }
+
+
+  setSaving = () => {
+    this.#filmPopup.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#filmPopup.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+        deletingCommentId: null,
+      });
+    };
+    this.#filmPopup.shake(resetFormState);
+  }
+
 
 #renderPopup = () => {
   const prevFilmPopup = this.#filmPopup;
@@ -35,8 +68,8 @@ export default class FilmPopupPresenter {
   this.#filmPopup.setWatchlistClickHandler(this.#handleWatchlistClick);
   this.#filmPopup.setWatchedlistClickHandler(this.#handleWatchedClick);
   this.#filmPopup.setFavoritelistClickHandler(this.#handleFavoriteClick);
-  //this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
-  //this.#filmPopup.setCommentDeleteHandler(this.#handleCommentDelete);
+  this.#filmPopup.setCommentAddHandler(this.#handleCommentAdd);
+  this.#filmPopup.setCommentDeleteHandler(this.#handleCommentDelete);
 
   if(prevFilmPopup !== null){
     this.#scrollTop = prevFilmPopup.element.scrollTop;
@@ -69,6 +102,7 @@ resetView = () => {
 #handleCloseButtonClick = () => {
   this.#destroyPopup();
   document.removeEventListener('keydown', this.#onEscKeyDown);
+  this.#destroyedPopup();
 };
 
 
@@ -105,23 +139,25 @@ resetView = () => {
     });
 };
 
-/*
-#handleCommentAdd = (comment) => {
-  const newComment = { ...generateComment(Math.random()), ...comment};
+
+#handleCommentAdd = (newComment) => {
+  const film = {...this.#film};
+  const filmId = this.#film.id;
   this.#changeData(
     UserAction.COMMENT_ADD,
     UpdateType.MINOR,
-    newComment,);
+    {newComment, film, filmId});
 };
 
 
-#handleCommentDelete = (comment) => {
+#handleCommentDelete = (commentId) => {
+  const film = {...this.#film};
   this.#changeData(
     UserAction.COMMENT_DELETE,
     UpdateType.MINOR,
-    comment,);
-}
-*/
+    {commentId, film});
+};
+
 
 #onEscKeyDown = (evt) => {
   if (evt.key === 'Escape' || evt.key === 'Esc') {
@@ -129,6 +165,7 @@ resetView = () => {
     this.#filmPopup.restore(this.#film);
     this.#destroyPopup();
     document.removeEventListener('keydown', this.#onEscKeyDown);
+    this.#destroyedPopup();
   }
 };
 }

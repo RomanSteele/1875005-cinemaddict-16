@@ -1,5 +1,5 @@
 import AbstractObservable from '../model/abstract-observable.js';
-import {UpdateType} from '../utils/const.js';
+
 
 export default class CommentsModel extends AbstractObservable {
   #apiService = null;
@@ -14,30 +14,34 @@ export default class CommentsModel extends AbstractObservable {
     return this.#comments;
   }
 
+
   init = async (filmId) => {
     try {
       const comments = await this.#apiService.getComments(filmId);
-      this.#comments = comments.map(this.#adaptToClient);
+      this.#comments = comments;
     } catch (err) {
       this.#comments = [];
     }
-
-    this._notify(UpdateType.INIT);
   }
-  /*
-  addComment = async (filmId, comment) => {
+
+
+  addComment = async (updateType, payload) => {
+    const {newComment, film, filmId} = payload;
     try {
-      const response = await this.#apiService.addComment(filmId, comment);
+      const response = await this.#apiService.addComment(newComment, filmId);
       this.#comments = response.comments;
-      this._notify();
-    } catch (err) {
+      const updatedFilm = {...film, comments: response.movie.comments};
+
+      this._notify(updateType, updatedFilm);
+    } catch(error) {
       throw new Error('Can\'t add comment');
     }
-  };
+  }
 
-  deleteComment = async (commentId) => {
+
+  deleteComment = async (updateType, payload) => {
+    const {commentId, film} = payload;
     const index = this.#comments.findIndex((comment) => comment.id === commentId);
-
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
     }
@@ -48,22 +52,11 @@ export default class CommentsModel extends AbstractObservable {
         ...this.#comments.slice(0, index),
         ...this.#comments.slice(index + 1)
       ];
-
-      this._notify();
+      const updatedFilm = {...film, comments: film.comments.filter((comment) => comment !== commentId)};
+      this._notify(updateType, updatedFilm);
     } catch (err) {
       throw new Error('Can\'t delete comment');
     }
   };
-*/
 
-  #adaptToClient = (comment) => {
-    const adaptedComment = {
-      id: comment.id,
-      text: comment.comment,
-      author: comment.author,
-      date: comment.date,
-      emotion: comment.emotion,
-    };
-    return adaptedComment;
-  }
 }

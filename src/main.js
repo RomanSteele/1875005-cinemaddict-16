@@ -17,11 +17,11 @@ import FilmsQuantityView from './view/films-quantity-view.js';
 
 import ApiService from './api-service.js';
 
-const siteMain = document.querySelector('.main');
-const siteFooter = document.querySelector('.footer');
-
 const AUTHORIZATION = 'Basic ZZqP5God45K5';
 const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
+
+const siteMain = document.querySelector('.main');
+const siteFooter = document.querySelector('.footer');
 
 const filterModel = new FilterModel();
 const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));

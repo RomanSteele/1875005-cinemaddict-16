@@ -8,7 +8,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
-//для создания строк описания фильма
+
 const createTableRowTemplate = (term, cell) => (
   `<tr class="film-details__row">
     <td class="film-details__term">${term}</td>
@@ -16,11 +16,10 @@ const createTableRowTemplate = (term, cell) => (
   </tr>`
 );
 
-//Разметка для жанров
+
 const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
 
-//Подставляет в разметку Genres или Genre
 const useGenreOrGenres = (genre) => {
   if (genre.length > 1) {
     return 'Genres';
@@ -28,28 +27,28 @@ const useGenreOrGenres = (genre) => {
   return 'Genre';
 };
 
-//Создание комментария
-const createCommentTemplate = ({ id, author, text, date, emotion }) => (
+
+const createCommentTemplate = ({ id, author, comment, date, emotion },isDeleting, isDisabled, deletingCommentId) => (
   `<li class="film-details__comment" data-id="${id}">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="">
   </span>
   <div>
-    <p class="film-details__comment-text">${he.encode(text)}</p>
+    <p class="film-details__comment-text">${he.encode(comment)}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${he.encode(author)}</span>
       <span class="film-details__comment-day">${dayjs(date).fromNow()}</span>
-      <button class="film-details__comment-delete ">Delete</button>
+      <button class="film-details__comment-delete" data-comment-id="${id}" ${isDisabled ? 'disabled' : ''}>${isDeleting && id === deletingCommentId ? 'Deleting...' : 'Delete'}</button>
     </p>
   </div>
 </li>`
 );
 
 
-const createEmotionsTemplate = (emotionNames, emotion) => emotionNames.map((currentEmotion) => {
+const createEmotionsTemplate = (emotionNames, emotion, isSaving) => emotionNames.map((currentEmotion) => {
   const isChecked = (currentEmotion === emotion) ? 'checked' : '';
 
-  return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${currentEmotion}" value="${currentEmotion}" ${isChecked}>
+  return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji"${isSaving ? 'disabled' : ''} type="radio" id="emoji-${currentEmotion}" value="${currentEmotion}" ${isChecked}>
   <label class="film-details__emoji-label" for="emoji-${currentEmotion}">
     <img src="./images/emoji/${currentEmotion}.png" width="30" height="30" alt="emoji-${currentEmotion}">
   </label>`;
@@ -63,7 +62,7 @@ const createControlButtonTemplate = (name, title, isActive) => {
   );
 };
 
-const createCommentsTemplate = (comments) => comments.map(createCommentTemplate).join('');
+const createCommentsTemplate = (comments, isDeleting, isDisabled, deletingCommentId) => comments.map((comment) => createCommentTemplate(comment, isDeleting, isDisabled, deletingCommentId)).join('');
 
 export const createInfoPopupTemplate = (film, comments) => {
 
@@ -86,11 +85,14 @@ export const createInfoPopupTemplate = (film, comments) => {
     isFavorite,
     comment,
     emotion,
+    isDisabled,
+    isSaving,
+    isDeleting,
+    deletingCommentId,
   } = film;
-
-  const commentsTemplate = createCommentsTemplate(comments);
+  const commentsTemplate = createCommentsTemplate(comments, isDeleting, isDisabled, deletingCommentId);
   const genresTemplate = genres.map(createGenreTemplate).join('');
-  const emotionsTemplate = createEmotionsTemplate(COMMENT_EMOJIS, emotion);
+  const emotionsTemplate = createEmotionsTemplate(COMMENT_EMOJIS, emotion, isSaving);
 
   const commentEmotionTemplate = (emotion) ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : '';
 
@@ -138,7 +140,7 @@ export const createInfoPopupTemplate = (film, comments) => {
     </div>
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.comments.length}</span></h3>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
         <ul class="film-details__comments-list">
         ${commentsTemplate}
         </ul>
@@ -147,7 +149,7 @@ export const createInfoPopupTemplate = (film, comments) => {
           ${commentEmotionTemplate}
           </div>
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(comment)}</textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isSaving ? 'disabled' : ''}>${he.encode(comment)}</textarea>
           </label>
           <div class="film-details__emoji-list">
           ${emotionsTemplate}
@@ -158,6 +160,7 @@ export const createInfoPopupTemplate = (film, comments) => {
 
 export default class InfoPopupView extends SmartView {
   #comments = null;
+  #scrollPosition = null;
 
   constructor(film, comments) {
     super();
@@ -170,19 +173,13 @@ export default class InfoPopupView extends SmartView {
     return createInfoPopupTemplate(this._data,this.#comments);
   }
 
-  get state() {
-    return { ...this._data, scrollPosition: this.element.scrollTop};
-  }
 
-
-  //для закрытия
   setClosePopupHandler = (callback) => {
     this._callback.closePopup = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#onCloseButtonClick);
   }
 
 
-  //Вотчлист
   setWatchlistClickHandler = (callback) => {
     this._callback.clickWatchlist = callback;
 
@@ -191,7 +188,6 @@ export default class InfoPopupView extends SmartView {
   }
 
 
-  //Просмотренное
   setWatchedlistClickHandler = (callback) => {
     this._callback.clickWatchedList = callback;
 
@@ -200,7 +196,6 @@ export default class InfoPopupView extends SmartView {
   }
 
 
-  //Избранное
   setFavoritelistClickHandler = (callback) => {
     this._callback.clickFavoriteList = callback;
 
@@ -209,19 +204,18 @@ export default class InfoPopupView extends SmartView {
   }
 
 
-  //Добавление комментария
   setCommentAddHandler = (callback) => {
     this._callback.addComment = callback;
     this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#onCommentInputKeydown);
   };
 
-  //Удаление комментария
+
   setCommentDeleteHandler = (callback) => {
     this._callback.deleteComment = callback;
     this.element.querySelectorAll('.film-details__comment-delete').forEach((element) => element.addEventListener('click', this.#onCommentDelete));
   };
 
-  // Для эмодзи и ввода комментария
+
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#onEmotionListChange);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#onCommentInput);
@@ -230,6 +224,7 @@ export default class InfoPopupView extends SmartView {
   restore = (film) => {
     this._data = InfoPopupView.parseFilmToData(film);
   };
+
 
   restoreHandlers = () => {
     this.setClosePopupHandler(this._callback.closePopup);
@@ -242,35 +237,38 @@ export default class InfoPopupView extends SmartView {
   };
 
 
-  restoreScrollPosition = () => {
-    this.element.scrollTop = this._data.scrollPosition;
-  };
-
   #onCloseButtonClick = (evt) => {
     evt.preventDefault();
     this._callback.closePopup();
   }
+
 
   #onWatchlistClick = (evt) => {
     evt.preventDefault();
     this._callback.clickWatchlist();
   }
 
+
   #onWatchedClick = (evt) => {
     evt.preventDefault();
     this._callback.clickWatchedList();
   }
+
 
   #onFavoriteClick = (evt) => {
     evt.preventDefault();
     this._callback.clickFavoriteList();
   }
 
+
   #onEmotionListChange = (evt) => {
+    this.#scrollPosition = this.element.scrollTop ;
     evt.preventDefault();
     this.updateData({
       emotion: evt.target.value });
+    this.element.scrollTop = this.#scrollPosition;
   };
+
 
   #onCommentInput = (evt) => {
     this.updateData({
@@ -278,22 +276,25 @@ export default class InfoPopupView extends SmartView {
     }, true);
   };
 
-  #onCommentInputKeydown = (evt) => {
-    if (!this._data.emotion || !this._data.comment) {
-      return;
-    }
 
-    if (evt.code === 'Enter' && evt.ctrlKey) {
-      const comment = {
-        id: Math.floor((Math.random() * 100) + 1),
+  #onCommentInputKeydown = (evt) => {
+    this.#scrollPosition = this.element.scrollTop ;
+    if (evt.ctrlKey && evt.key === 'Enter' || evt.metaKey && evt.key === 'Enter'){
+      if (this._data.comment === '' || this._data.emotion === '') {
+        return;
+      }
+      const newComment = {
+        comment: this._data.comment,
         emotion: this._data.emotion,
-        text: this._data.comment,
       };
-      this._callback.addComment(comment);
+      this._callback.addComment(newComment);
     }
+    this.element.scrollTop = this.#scrollPosition;
   };
 
+
   #onCommentDelete = (evt) => {
+    this.#scrollPosition = this.element.scrollTop ;
     evt.preventDefault();
 
     const parent = evt.currentTarget.closest('[data-id]');
@@ -303,9 +304,17 @@ export default class InfoPopupView extends SmartView {
 
     const id = parent.dataset.id;
     this._callback.deleteComment(id);
+    this.element.scrollTop = this.#scrollPosition;
   };
 
-  static parseFilmToData = (film) => ({ comment: '', emotion: '', ...film });
+  static parseFilmToData = (film) => (
+    { comment: '',
+      emotion: '',
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+      deletingCommentId: null,
+      ...film});
 }
 
 

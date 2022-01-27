@@ -50,6 +50,7 @@ export default class FilterPresenter {
     ];
   }
 
+
   init = () => {
     const filterItems = this.filters;
     const prevFilterComponent = this.#filterComponent;
@@ -65,13 +66,16 @@ export default class FilterPresenter {
     remove(prevFilterComponent);
   }
 
+
   removeActiveClass = () => {
     this.#filterComponent.removeActiveClass();
   }
 
+
   #handleModelEvent = () => {
     this.init();
   }
+
 
   #handleFilterTypeChange = (filterType) => {
     const isStatisticsOpened = document.querySelector('.main-navigation__additional--active');
