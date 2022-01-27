@@ -25,20 +25,22 @@ export default class CommentsModel extends AbstractObservable {
   }
 
 
-  addComment = async (updateType, update, film, filmId) => {
+  addComment = async (updateType, payload) => {
+    const {newComment, film, filmId} = payload;
     try {
-      const response = await this.#apiService.addComment(update, filmId);
+      const response = await this.#apiService.addComment(newComment, filmId);
       this.#comments = response.comments;
-      film = {...film, comments: response.movie.comments};
+      const updatedFilm = {...film, comments: response.movie.comments};
 
-      this._notify(updateType, film);
+      this._notify(updateType, updatedFilm);
     } catch(error) {
       throw new Error('Can\'t add comment');
     }
   }
 
 
-  deleteComment = async (updateType, commentId, film) => {
+  deleteComment = async (updateType, payload) => {
+    const {commentId, film} = payload;
     const index = this.#comments.findIndex((comment) => comment.id === commentId);
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
@@ -50,8 +52,8 @@ export default class CommentsModel extends AbstractObservable {
         ...this.#comments.slice(0, index),
         ...this.#comments.slice(index + 1)
       ];
-      film = {...film, comments: film.comments.filter((comment) => comment !== commentId)};
-      this._notify(updateType, film);
+      const updatedFilm = {...film, comments: film.comments.filter((comment) => comment !== commentId)};
+      this._notify(updateType, updatedFilm);
     } catch (err) {
       throw new Error('Can\'t delete comment');
     }

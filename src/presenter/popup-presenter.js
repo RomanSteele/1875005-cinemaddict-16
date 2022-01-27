@@ -12,9 +12,11 @@ export default class FilmPopupPresenter {
 
   #film = null;
   #comments = null;
+  #destroyedPopup = null;
 
-  constructor(changeData) {
+  constructor(changeData, handlePopupDestroy) {
     this.#changeData = changeData;
+    this.#destroyedPopup = handlePopupDestroy;
   }
 
   get film(){
@@ -69,6 +71,7 @@ resetView = () => {
 #handleCloseButtonClick = () => {
   this.#destroyPopup();
   document.removeEventListener('keydown', this.#onEscKeyDown);
+  this.#destroyedPopup();
 };
 
 
@@ -107,20 +110,22 @@ resetView = () => {
 
 
 #handleCommentAdd = (newComment) => {
-  const id = this.#film.id;
+  const film = {...this.#film};
+  const filmId = this.#film.id;
   this.#changeData(
     UserAction.COMMENT_ADD,
     UpdateType.MINOR,
-    newComment,{...this.#film}, id);
+    {newComment, film, filmId});
 };
 
 
 #handleCommentDelete = (commentId) => {
+  const film = {...this.#film};
   this.#changeData(
     UserAction.COMMENT_DELETE,
     UpdateType.MINOR,
-    commentId,{...this.#film});
-}
+    {commentId, film});
+};
 
 
 #onEscKeyDown = (evt) => {
@@ -129,6 +134,7 @@ resetView = () => {
     this.#filmPopup.restore(this.#film);
     this.#destroyPopup();
     document.removeEventListener('keydown', this.#onEscKeyDown);
+    this.#destroyedPopup();
   }
 };
 }
