@@ -223,27 +223,42 @@ export default class FilmsPresenter {
   }
 
 
-#handleViewAction = (actionType, updateType, payload) => {
-  switch (actionType) {
+  #handleViewAction = async (actionType, updateType, payload) => {
+    switch (actionType) {
 
-    case UserAction.WATCHLIST_ADD:
-    case UserAction.WATCHED_ADD:
-    case UserAction.FAVORITE_ADD:
-      if(this.#filterModel.filter === actionTypeToFilterType[actionType] || this.#filmsExtraTopPresenter || this.#filmsExtraCommentsPresenter) {
-        updateType = UpdateType.MINOR;
-      }
-      this.#filmsModel.updateFilm(updateType, payload);
-      break;
+      case UserAction.WATCHLIST_ADD:
+      case UserAction.WATCHED_ADD:
+      case UserAction.FAVORITE_ADD:
+        if(this.#filterModel.filter === actionTypeToFilterType[actionType] || this.#filmsExtraTopPresenter || this.#filmsExtraCommentsPresenter) {
+          updateType = UpdateType.MINOR;
+        }
+        try {
+          await this.#filmsModel.updateFilm(updateType, payload);
+        } catch(err) {
+          throw new Error('Can\'t update film');
+        }
+        break;
 
-    case UserAction.COMMENT_ADD:
-      this.#commentsModel.addComment(updateType, payload);
-      break;
+      case UserAction.COMMENT_ADD:
+        this.#popupPresenter.setSaving();
+        try {
+          await this.#commentsModel.addComment(updateType, payload);
+        } catch (err) {
+          this.#popupPresenter.setAborting();
+        }
+        break;
 
-    case UserAction.COMMENT_DELETE:
-      this.#commentsModel.deleteComment(updateType, payload);
-      break;
+      case UserAction.COMMENT_DELETE:
+        this.#popupPresenter.setDeleting(payload.commentId);
+        try {
+          await this.#commentsModel.deleteComment(updateType, payload);
+        } catch (err) {
+          this.#popupPresenter.setAborting();
+        }
+        break;
+    }
   }
-}
+
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
@@ -274,6 +289,7 @@ export default class FilmsPresenter {
     }
 
   }
+
 
   #renderShowMoreButton = () => {
     this.#showMoreButtonComponent = new ShowMoreButtonView();
@@ -339,6 +355,4 @@ export default class FilmsPresenter {
     }
     this.#renderBothExtra();
   }
-
 }
-

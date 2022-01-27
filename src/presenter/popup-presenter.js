@@ -6,13 +6,13 @@ import {UserAction, UpdateType} from '../utils/const.js';
 export default class FilmPopupPresenter {
   #changeData = null;
 
-
   #filmPopup = null;
   #scrollTop = 0;
 
   #film = null;
   #comments = null;
   #destroyedPopup = null;
+
 
   constructor(changeData, handlePopupDestroy) {
     this.#changeData = changeData;
@@ -23,10 +23,41 @@ export default class FilmPopupPresenter {
     return this.#film;
   }
 
+
   init = (film,comments) => {
     this.#film = film;
     this.#comments = comments;
     this.#renderPopup();
+  }
+
+
+  setDeleting = (updateId = null) => {
+    this.#filmPopup.updateData({
+      isDisabled: true,
+      isDeleting: true,
+      deletingCommentId: updateId,
+    });
+  }
+
+
+  setSaving = () => {
+    this.#filmPopup.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#filmPopup.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+        deletingCommentId: null,
+      });
+    };
+    this.#filmPopup.shake(resetFormState);
   }
 
 

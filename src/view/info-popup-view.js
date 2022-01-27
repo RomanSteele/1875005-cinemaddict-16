@@ -28,7 +28,7 @@ const useGenreOrGenres = (genre) => {
 };
 
 
-const createCommentTemplate = ({ id, author, comment, date, emotion }) => (
+const createCommentTemplate = ({ id, author, comment, date, emotion },isDeleting, isDisabled, deletingCommentId) => (
   `<li class="film-details__comment" data-id="${id}">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="">
@@ -38,17 +38,17 @@ const createCommentTemplate = ({ id, author, comment, date, emotion }) => (
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${he.encode(author)}</span>
       <span class="film-details__comment-day">${dayjs(date).fromNow()}</span>
-      <button class="film-details__comment-delete ">Delete</button>
+      <button class="film-details__comment-delete" data-comment-id="${id}" ${isDisabled ? 'disabled' : ''}>${isDeleting && id === deletingCommentId ? 'Deleting...' : 'Delete'}</button>
     </p>
   </div>
 </li>`
 );
 
 
-const createEmotionsTemplate = (emotionNames, emotion) => emotionNames.map((currentEmotion) => {
+const createEmotionsTemplate = (emotionNames, emotion, isSaving) => emotionNames.map((currentEmotion) => {
   const isChecked = (currentEmotion === emotion) ? 'checked' : '';
 
-  return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${currentEmotion}" value="${currentEmotion}" ${isChecked}>
+  return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji"${isSaving ? 'disabled' : ''} type="radio" id="emoji-${currentEmotion}" value="${currentEmotion}" ${isChecked}>
   <label class="film-details__emoji-label" for="emoji-${currentEmotion}">
     <img src="./images/emoji/${currentEmotion}.png" width="30" height="30" alt="emoji-${currentEmotion}">
   </label>`;
@@ -62,7 +62,7 @@ const createControlButtonTemplate = (name, title, isActive) => {
   );
 };
 
-const createCommentsTemplate = (comments) => comments.map(createCommentTemplate).join('');
+const createCommentsTemplate = (comments, isDeleting, isDisabled, deletingCommentId) => comments.map((comment) => createCommentTemplate(comment, isDeleting, isDisabled, deletingCommentId)).join('');
 
 export const createInfoPopupTemplate = (film, comments) => {
 
@@ -85,11 +85,14 @@ export const createInfoPopupTemplate = (film, comments) => {
     isFavorite,
     comment,
     emotion,
+    isDisabled,
+    isSaving,
+    isDeleting,
+    deletingCommentId,
   } = film;
-
-  const commentsTemplate = createCommentsTemplate(comments);
+  const commentsTemplate = createCommentsTemplate(comments, isDeleting, isDisabled, deletingCommentId);
   const genresTemplate = genres.map(createGenreTemplate).join('');
-  const emotionsTemplate = createEmotionsTemplate(COMMENT_EMOJIS, emotion);
+  const emotionsTemplate = createEmotionsTemplate(COMMENT_EMOJIS, emotion, isSaving);
 
   const commentEmotionTemplate = (emotion) ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : '';
 
@@ -146,7 +149,7 @@ export const createInfoPopupTemplate = (film, comments) => {
           ${commentEmotionTemplate}
           </div>
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(comment)}</textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isSaving ? 'disabled' : ''}>${he.encode(comment)}</textarea>
           </label>
           <div class="film-details__emoji-list">
           ${emotionsTemplate}
@@ -157,6 +160,7 @@ export const createInfoPopupTemplate = (film, comments) => {
 
 export default class InfoPopupView extends SmartView {
   #comments = null;
+  #scrollPosition = null;
 
   constructor(film, comments) {
     super();
@@ -233,11 +237,6 @@ export default class InfoPopupView extends SmartView {
   };
 
 
-  restoreScrollPosition = () => {
-    this.element.scrollTop = this._data.scrollPosition;
-  };
-
-
   #onCloseButtonClick = (evt) => {
     evt.preventDefault();
     this._callback.closePopup();
@@ -263,9 +262,11 @@ export default class InfoPopupView extends SmartView {
 
 
   #onEmotionListChange = (evt) => {
+    this.#scrollPosition = this.element.scrollTop ;
     evt.preventDefault();
     this.updateData({
       emotion: evt.target.value });
+    this.element.scrollTop = this.#scrollPosition;
   };
 
 
@@ -277,6 +278,7 @@ export default class InfoPopupView extends SmartView {
 
 
   #onCommentInputKeydown = (evt) => {
+    this.#scrollPosition = this.element.scrollTop ;
     if (evt.ctrlKey && evt.key === 'Enter' || evt.metaKey && evt.key === 'Enter'){
       if (this._data.comment === '' || this._data.emotion === '') {
         return;
@@ -287,10 +289,12 @@ export default class InfoPopupView extends SmartView {
       };
       this._callback.addComment(newComment);
     }
+    this.element.scrollTop = this.#scrollPosition;
   };
 
 
   #onCommentDelete = (evt) => {
+    this.#scrollPosition = this.element.scrollTop ;
     evt.preventDefault();
 
     const parent = evt.currentTarget.closest('[data-id]');
@@ -300,9 +304,17 @@ export default class InfoPopupView extends SmartView {
 
     const id = parent.dataset.id;
     this._callback.deleteComment(id);
+    this.element.scrollTop = this.#scrollPosition;
   };
 
-  static parseFilmToData = (film) => ({ comment: '', emotion: '', ...film });
+  static parseFilmToData = (film) => (
+    { comment: '',
+      emotion: '',
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+      deletingCommentId: null,
+      ...film});
 }
 
 
