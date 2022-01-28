@@ -27,7 +27,7 @@ export const UpdateType = {
 };
 
 export const StatisticsItem = {
-  STATISTICS: 'stats'
+  STATISTICS: 'stats',
 };
 
 export const StatisticsType = {
@@ -35,7 +35,7 @@ export const StatisticsType = {
   TODAY: 'today',
   WEEK: 'week',
   MONTH: 'month',
-  YEAR: 'year'
+  YEAR: 'year',
 };
 
 export const FilterType = {
