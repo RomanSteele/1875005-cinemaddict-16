@@ -1,7 +1,4 @@
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
 import {MINUTES_IN_HOUR} from './const.js';
-dayjs.extend(duration);
 
 
 export const convertTime = (minutesQuantity) => {

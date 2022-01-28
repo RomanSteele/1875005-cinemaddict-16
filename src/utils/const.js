@@ -38,31 +38,6 @@ export const StatisticsType = {
   YEAR: 'year'
 };
 
-export const Rank = {
-  NOVICE: 'Novice',
-  FAN: 'Fan',
-  MOVIE_BUFF: 'Movie Buff',
-};
-
-export const RankType = {
-  NOVICE: {
-    MIN: 1,
-    MAX: 10,
-  },
-  FAN: {
-    MIN: 11,
-    MAX: 20,
-  },
-  MOVIE_BUFF: {
-    MIN: 21,
-  }
-};
-
-export const DesctiptionLettersQuantity = {
-  SHORT: 139,
-  LONG: 140,
-};
-
 export const FilterType = {
   ALL: 'all',
   WATCHLIST: 'watchlist',

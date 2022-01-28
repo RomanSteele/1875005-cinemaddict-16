@@ -3,11 +3,9 @@ import {shiftDurationToHours} from '../utils/helpers.js';
 import SmartView from './smart-view.js';
 import dayjs from 'dayjs';
 import he from 'he';
-
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
-
 
 const createTableRowTemplate = (term, cell) => (
   `<tr class="film-details__row">
@@ -306,6 +304,7 @@ export default class InfoPopupView extends SmartView {
     this._callback.deleteComment(id);
     this.element.scrollTop = this.#scrollPosition;
   };
+
 
   static parseFilmToData = (film) => (
     { comment: '',

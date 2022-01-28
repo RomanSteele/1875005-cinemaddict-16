@@ -1,8 +1,6 @@
 import {RenderPosition, render, remove} from './utils/render.js';
-import FilmsView from './view/films-view.js';
-import RankView from './view/rank-view.js';
 import {StatisticsItem} from './utils/const.js';
-import {shiftFilmsCountToUserRank} from './utils/helpers.js';
+import {getRankTitle} from './utils/helpers.js';
 
 import FilterPresenter from './presenter/filter-presenter.js';
 import FilmsPresenter from './presenter/film-cards-presenter.js';
@@ -14,6 +12,8 @@ import CommentsModel from './model/comments-model.js';
 import StatisticsButtonView from './view/statistics-button-view.js';
 import StatisticsView from './view/statistics-view.js';
 import FilmsQuantityView from './view/films-quantity-view.js';
+import FilmsView from './view/films-view.js';
+import RankView from './view/rank-view.js';
 
 import ApiService from './api-service.js';
 
@@ -27,10 +27,8 @@ const filterModel = new FilterModel();
 const filmsModel = new FilmsModel(new ApiService(END_POINT, AUTHORIZATION));
 const commentsModel = new CommentsModel(new ApiService(END_POINT, AUTHORIZATION));
 
-
 const allFilmsView = new FilmsView();
 render(siteMain, allFilmsView.element, RenderPosition.BEFORE_END);
-let userRank = null;
 
 const statisticsButtonComponent = new StatisticsButtonView();
 const siteHeader = document.querySelector('.header');
@@ -38,6 +36,7 @@ const siteHeader = document.querySelector('.header');
 const filterPresenter = new FilterPresenter(statisticsButtonComponent, filterModel, filmsModel);
 const filmsPresenter = new FilmsPresenter(allFilmsView, filmsModel, filterModel, commentsModel);
 
+let userRank = null;
 let statisticsComponent = null;
 let currentStatisticsItem = null;
 
@@ -65,7 +64,7 @@ render(siteMain, statisticsButtonComponent, RenderPosition.AFTER_BEGIN);
 filterPresenter.init();
 filmsPresenter.init();
 filmsModel.init().finally(() => {
-  userRank = shiftFilmsCountToUserRank(filmsModel.films.filter((film) => film.isWatched).length);
+  userRank = getRankTitle(filmsModel.films.filter((film) => film.isWatched).length);
   render(siteHeader, new RankView(userRank), RenderPosition.BEFORE_END);
   statisticsButtonComponent.setStatisticsButtonClickHandler(handleStatsClick);
   render(siteFooter, new FilmsQuantityView(filmsModel.films.length), RenderPosition.BEFORE_END);
