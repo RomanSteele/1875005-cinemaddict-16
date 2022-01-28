@@ -49,6 +49,7 @@ export default class FilmPopupPresenter {
 
 
   setAborting = () => {
+    const scrollPosition = this.#filmPopup.element.scrollTop;
     const resetFormState = () => {
       this.#filmPopup.updateData({
         isDisabled: false,
@@ -56,6 +57,7 @@ export default class FilmPopupPresenter {
         isDeleting: false,
         deletingCommentId: null,
       });
+      this.#filmPopup.element.scrollTop = scrollPosition;
     };
     this.#filmPopup.shake(resetFormState);
   }
