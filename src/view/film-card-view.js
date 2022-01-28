@@ -1,7 +1,7 @@
 import {shiftDurationToHours} from '../utils/helpers.js';
 import AbstractView from './abstract-view.js';
-import {DesctiptionLettersQuantity} from '../utils/const.js';
 
+const MAX_DESCRIPTION_LENGTH = 140;
 
 const createControlButtonTemplate = (name, title, isActive) => {
   const activeClass = isActive ? 'film-card__controls-item--active' : '';
@@ -30,8 +30,10 @@ const createFilmCardTemplate = (film) => {
     isFavorite,
   } = film;
 
-
-  const descriptionFormat = (description.length > DesctiptionLettersQuantity.LONG) ? `${description.slice(0, DesctiptionLettersQuantity.SHORT)}...` : description;
+  const truncateText = (text, maxLength) =>
+    text.length > maxLength
+      ? `${text.slice(0, maxLength - 1)}…`
+      : text;
 
   return`<article class="film-card">
           <a class="film-card__link">
@@ -43,7 +45,7 @@ const createFilmCardTemplate = (film) => {
               <span class="film-card__genre">${genres[0]}</span>
             </p>
             <img src="./${imgSource}" alt="${alternativeTitle}" class="film-card__poster">
-            <p class="film-card__description">${descriptionFormat}</p>
+            <p class="film-card__description">${truncateText(description, MAX_DESCRIPTION_LENGTH)}</p>
             <span class="film-card__comments">${comments.length} comments</span>
           </a>
           <div class="film-card__controls">
@@ -67,14 +69,12 @@ export default class FilmCardView extends AbstractView {
     return createFilmCardTemplate(this.#film);
   }
 
-  //для клика
 
   setClickHandler = (callback) => {
     this._callback.click = callback;
     this.element.querySelector('.film-card__link').addEventListener('click', this.#onLinkClick);
   }
 
-  //Вотчлист
 
   setWatchlistClickHandler = (callback) => {
     this._callback.clickWatchlist = callback;
@@ -84,8 +84,6 @@ export default class FilmCardView extends AbstractView {
   }
 
 
-  //Просмотренное
-
   setWatchedlistClickHandler = (callback) => {
     this._callback.clickWatchedList = callback;
 
@@ -93,7 +91,6 @@ export default class FilmCardView extends AbstractView {
       .addEventListener('click', this.#onMarkAsWatchedClick);
   }
 
-  //Избранное
 
   setFavoritelistClickHandler = (callback) => {
     this._callback.clickFavoriteList = callback;
