@@ -6,7 +6,7 @@ import EmptyListView from '../view/empty-list-view.js';
 import LoadingView from '../view/loading-view.js';
 
 import {RenderPosition, render, remove} from '../utils/render.js';
-import { sortFilmsByDate, sortFilmsByRating, sortExtraListMostCommented, sortExtraListTopRated} from '../utils.js';
+import {sortFilmsByDate, sortFilmsByRating, sortExtraListMostCommented, sortExtraListTopRated} from '../utils/sort-helpers.js';
 
 import SingleCardPresenter from './film-presenter.js';
 import {filterTypeToFilms, actionTypeToFilterType } from '../utils/filters.js';
@@ -80,8 +80,6 @@ export default class FilmsPresenter {
     this.#renderBoard();
     render(this.#filmsSectionComponent, this.#filmContainerComponent, RenderPosition.AFTER_BEGIN);
     render(this.#container, this.#filmsSectionComponent, RenderPosition.BEFORE_END);
-    render(this.#container, this.#topExtraComponent, RenderPosition.BEFORE_END);
-    render(this.#container, this.#commentExtraComponent, RenderPosition.BEFORE_END);
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -235,7 +233,7 @@ export default class FilmsPresenter {
         try {
           await this.#filmsModel.updateFilm(updateType, payload);
         } catch(err) {
-          throw new Error('Can\'t update film');
+          this.#popupPresenter.setAborting();
         }
         break;
 
@@ -352,6 +350,10 @@ export default class FilmsPresenter {
 
     if (filmsCount > this.#renderedFilmCount) {
       this.#renderShowMoreButton();
+    }
+    if(this.films.length !== 0){
+      render(this.#container, this.#topExtraComponent, RenderPosition.BEFORE_END);
+      render(this.#container, this.#commentExtraComponent, RenderPosition.BEFORE_END);
     }
     this.#renderBothExtra();
   }

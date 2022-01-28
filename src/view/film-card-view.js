@@ -30,7 +30,7 @@ const createFilmCardTemplate = (film) => {
     isFavorite,
   } = film;
 
-  const descriptionFormat = (text, maxLength) =>
+  const truncateText = (text, maxLength) =>
     text.length > maxLength
       ? `${text.slice(0, maxLength - 1)}…`
       : text;
@@ -45,7 +45,7 @@ const createFilmCardTemplate = (film) => {
               <span class="film-card__genre">${genres[0]}</span>
             </p>
             <img src="./${imgSource}" alt="${alternativeTitle}" class="film-card__poster">
-            <p class="film-card__description">${descriptionFormat(description, MAX_DESCRIPTION_LENGTH)}</p>
+            <p class="film-card__description">${truncateText(description, MAX_DESCRIPTION_LENGTH)}</p>
             <span class="film-card__comments">${comments.length} comments</span>
           </a>
           <div class="film-card__controls">
