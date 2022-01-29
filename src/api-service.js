@@ -31,9 +31,8 @@ export default class ApiService {
       body: JSON.stringify(this.#adaptToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
-    const parsedResponse = await ApiService.parseResponse(response);
 
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   }
 
   addComment = async (comment, filmId) => {
@@ -44,9 +43,7 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   }
 
   deleteComment = async (commentId) =>
